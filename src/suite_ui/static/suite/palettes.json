@@ -1,0 +1,68 @@
+{
+  "default": "valley-baptist",
+  "palettes": {
+    "valley-baptist": {
+      "label": "Valley Baptist",
+      "accent": "#00a3d6",
+      "btn": "#007ea6",
+      "top": "#414042",
+      "btn_dark": "#00a3d6",
+      "ink_dark": "#0b1a20",
+      "accent2": "#f7cf46"
+    },
+    "cobalt": {
+      "label": "Cobalt",
+      "accent": "#0f6cbd",
+      "btn": "#0f6cbd",
+      "top": "#0f548c",
+      "btn_dark": "#479ef5",
+      "ink_dark": "#0a1a2e",
+      "accent2": "#ffb900"
+    },
+    "teal": {
+      "label": "Teal",
+      "accent": "#038387",
+      "btn": "#037075",
+      "top": "#024f52",
+      "btn_dark": "#3ab3b7",
+      "ink_dark": "#06201f",
+      "accent2": "#ffaa44"
+    },
+    "violet": {
+      "label": "Violet",
+      "accent": "#7160e8",
+      "btn": "#5b4bd4",
+      "top": "#3b2e8c",
+      "btn_dark": "#9d8ff5",
+      "ink_dark": "#170f40",
+      "accent2": "#e3008c"
+    },
+    "forest": {
+      "label": "Forest",
+      "accent": "#107c10",
+      "btn": "#0e700e",
+      "top": "#0b4f0b",
+      "btn_dark": "#54b054",
+      "ink_dark": "#062006",
+      "accent2": "#ffc83d"
+    },
+    "crimson": {
+      "label": "Crimson",
+      "accent": "#c50f1f",
+      "btn": "#b10e1c",
+      "top": "#750b14",
+      "btn_dark": "#f1707b",
+      "ink_dark": "#2b0307",
+      "accent2": "#ffb900"
+    },
+    "graphite": {
+      "label": "Graphite",
+      "accent": "#4a5866",
+      "btn": "#44505c",
+      "top": "#242b33",
+      "btn_dark": "#a3b2c2",
+      "ink_dark": "#11161b",
+      "accent2": "#2899f5"
+    }
+  }
+}

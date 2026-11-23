@@ -1,0 +1,138 @@
+{#- Suite-UI admin shell: top bar (app launcher, brand, search, notifications, help, Copilot, light/dark, account),
+    collapsible left navigation, breadcrumb, flashes. Extend it from your app's base template:
+
+      {% set nav = [("Home", [("/", "Dashboard", "home")]), ("Manage", [("/things", "Things", "tag")])] %}
+      {% extends "suite/shell.html" %}
+
+    Context (all optional): path, user (str or {"name", "email"}), nav, counts {href: n}, ui (suite.ui(...)),
+    flashes [(kind, msg)], pill {"text", "kind"}, notifications [{"label", "items": [{"href","label","icon","count"}]}],
+    help_links [{"href","label","icon"}], user_links [{"href","label","icon"}], signout_url, nav_foot (html), page_help
+    {"key","text","url"}, banner (html), audience ("admin" default).
+-#}
+{% import "suite/_macros.html" as sm with context %}
+{% set ui = ui if ui is defined and ui else suite.ui() %}
+{% set path = path if path is defined and path else (request.url.path if request is defined and request else "/") %}
+{% set nav = nav if nav is defined and nav else [] %}
+{% set counts = counts if counts is defined and counts else {} %}
+{% set cur = namespace(len=0, group="", label="", href="", icon="") %}
+{% for group, items in nav %}{% for href, label, icon in items %}
+  {% if (path == href or (href != '/' and path.startswith(href.rstrip('/') ~ '/'))) and href|length > cur.len %}
+    {% set cur.len = href|length %}{% set cur.group = group %}{% set cur.label = label %}{% set cur.href = href %}{% set cur.icon = icon %}
+  {% endif %}
+{% endfor %}{% endfor %}
+{% set uname = (user.name if user is mapping else user) if user is defined and user else "" %}
+{% set umail = (user.email if user is mapping else "") if user is defined and user else "" %}
+<!doctype html>
+<html lang="{% block lang %}en{% endblock %}" data-palette="{{ ui.palette }}" style="{{ ui.style }}" data-suite-app="{{ suite.app_id }}"
+      data-suite-static="{{ suite.static }}" data-suite-audience="{{ audience if audience is defined and audience else 'admin' }}"
+      {% if suite.cookie_domain %}data-suite-cookie-domain="{{ suite.cookie_domain }}"{% endif %}
+      {% if suite.help_search %}data-suite-help-search="{{ suite.help_search }}"{% endif %}>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}{{ cur.label }}{% endblock %} · {{ suite.app_name }}</title>
+<link rel="icon" type="image/png" href="{{ suite.logo('favicon') }}">
+<link rel="stylesheet" href="{{ suite.asset('suite.css') }}">
+<script src="{{ suite.asset('suite.js') }}"></script>
+<script type="application/json" id="suite-apps">{{ suite.registry_json() }}</script>
+{% block head %}{% endblock %}
+</head>
+<body>
+<header class="topbar">
+  <button class="tb-btn tb-waffle" type="button" data-launcher aria-label="App launcher" title="Apps">{{ sm.icon("waffle") }}</button>
+  <button class="tb-btn" type="button" data-nav-toggle aria-label="Show or hide the menu" title="Menu">{{ sm.icon("menu") }}</button>
+  <a class="tb-brand" href="{{ suite.home_url }}">
+    <img src="{{ suite.logo('on-dark') }}" alt="{{ suite.org_name }}">
+    <span class="sep"></span><span class="app">{{ suite.app_name }}</span>
+  </a>
+  <div class="tb-search">
+    <input type="search" id="tb-search" placeholder="{% block search_placeholder %}Search pages and apps{% endblock %}" autocomplete="off" aria-label="Search">
+    {{ sm.icon("search") }}
+    <div class="search-results" id="tb-results" role="listbox"></div>
+  </div>
+  <div class="tb-right">
+    {% if pill is defined and pill %}<span class="tb-pill {{ pill.kind or '' }}">{{ pill.text }}</span>{% endif %}
+    {% block topbar_right %}{% endblock %}
+    {% if suite.copilot_url %}
+    <a class="tb-btn tb-copilot" href="{{ suite.copilot_url }}" target="_blank" rel="noopener" title="Open Microsoft 365 Copilot">{{ sm.icon("copilot") }}<span>Copilot</span></a>
+    {% endif %}
+    {% if notifications is defined and notifications %}
+    {% set bell = namespace(n=0) %}{% for sec in notifications %}{% for it in sec["items"] %}{% set bell.n = bell.n + (it.count or 0) %}{% endfor %}{% endfor %}
+    <div class="menu-wrap">
+      <button class="tb-btn" type="button" data-menu="m-bell" aria-label="Notifications" title="Notifications">{{ sm.icon("bell") }}{% if bell.n %}<span class="tb-count">{{ bell.n if bell.n < 100 else '99+' }}</span>{% endif %}</button>
+      <div class="menu" id="m-bell">
+        {% for sec in notifications %}<div class="sec">{{ sec.label }}</div>
+          {% for it in sec["items"] %}<a href="{{ it.href }}">{{ sm.icon(it.icon or 'bell', 'sm') }} {{ it.label }}{% if it.count is defined and it.count is not none %} <span class="nav-count" style="{{ '' if it.count else 'background:var(--panel-2);color:var(--muted)' }}">{{ it.count }}</span>{% endif %}</a>{% endfor %}
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+    {% if help_links is defined and help_links %}
+    <div class="menu-wrap">
+      <button class="tb-btn" type="button" data-menu="m-help" aria-label="Help" title="Help">{{ sm.icon("help") }}</button>
+      <div class="menu" id="m-help">{% for l in help_links %}<a href="{{ l.href }}">{{ sm.icon(l.icon or 'help', 'sm') }} {{ l.label }}</a>{% endfor %}</div>
+    </div>
+    {% endif %}
+    <button class="tb-btn" type="button" data-theme-toggle aria-label="Switch light / dark" title="Light / dark">{{ sm.icon("moon", "theme-ic-dark") }}{{ sm.icon("sun", "theme-ic-light") }}</button>
+    {% if uname %}
+    <div class="menu-wrap">
+      <button class="tb-btn" type="button" data-menu="m-user" aria-label="Account" title="{{ uname }}"><span class="avatar">{{ sm.initials(uname) }}</span></button>
+      <div class="menu" id="m-user">
+        <div class="head"><strong>{{ uname }}</strong><span class="small muted">{{ umail or suite.org_name }}</span></div>
+        <div class="sec">Appearance</div>
+        <div class="item">{{ sm.theme_switch() }}</div>
+        {% block user_menu %}{% endblock %}
+        {% if user_links is defined and user_links %}{% for l in user_links %}<a href="{{ l.href }}">{{ sm.icon(l.icon or 'user', 'sm') }} {{ l.label }}</a>{% endfor %}{% endif %}
+        {% if signout_url is defined and signout_url %}<a href="{{ signout_url }}">{{ sm.icon("signout", "sm") }} Sign out</a>{% endif %}
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</header>
+<div class="shell">
+  <nav class="nav" aria-label="Main menu">
+    {% if nav|length > 2 %}<div class="nav-tools"><button type="button" data-nav-all="open" title="Expand all sections">Expand all</button><button type="button" data-nav-all="close" title="Collapse all sections">Collapse all</button></div>{% endif %}
+    {% for group, items in nav %}
+      {% set gid = group|lower|replace(" & ", "-")|replace(" ", "-") %}
+      {% set gcount = namespace(n=0) %}{% for href, label, icon in items %}{% set gcount.n = gcount.n + (counts.get(href) or 0) %}{% endfor %}
+      <section class="nav-sec{{ ' has-active' if group == cur.group }}" data-sec="{{ gid }}">
+        {% if not loop.first or items|length > 1 %}
+        <button type="button" class="grp" aria-expanded="true" aria-controls="ns-{{ gid }}">
+          <span class="label">{{ group }}</span>{% if gcount.n %}<span class="nav-count grp-count">{{ gcount.n }}</span>{% endif %}
+          {{ sm.icon("chevron-down", "chev") }}</button>
+        {% endif %}
+        <div class="nav-items" id="ns-{{ gid }}">
+        {% for href, label, icon in items %}
+          <a href="{{ href }}" class="{{ 'active' if href == cur.href }}" title="{{ label }}" data-group="{{ group }}" data-icon="{{ icon }}"{% if href == cur.href %} aria-current="page"{% endif %}>
+            {{ sm.icon(icon) }}<span class="label">{{ label }}</span>{% if counts.get(href) %}<span class="nav-count">{{ counts[href] }}</span>{% endif %}</a>
+        {% endfor %}
+        </div>
+      </section>
+    {% endfor %}
+    <div class="foot">{% block nav_foot %}{{ nav_foot if nav_foot is defined and nav_foot else (suite.org_name ~ ' · ' ~ suite.app_name) }}{% endblock %}</div>
+  </nav>
+  <main data-icon="{{ cur.icon }}">
+    {% block crumbs %}
+    <div class="crumbs">
+      <a href="{{ nav[0][1][0][0] if nav else suite.home_url }}">Home</a>
+      {% if cur.href and cur.href != (nav[0][1][0][0] if nav else '/') %}
+        {{ sm.icon("chevron") }}<span>{{ cur.group }}</span>
+        {{ sm.icon("chevron") }}{% if path != cur.href %}<a href="{{ cur.href }}">{{ cur.label }}</a>{% else %}<span>{{ cur.label }}</span>{% endif %}
+      {% endif %}
+    </div>
+    {% endblock %}
+    {% if banner is defined and banner %}<div class="banner">{{ banner }}</div>{% endif %}
+    {% block banner %}{% endblock %}
+    {% for kind, msg in (flashes if flashes is defined and flashes else []) %}<div class="flash {{ kind }}">{{ msg }}</div>{% endfor %}
+    {% if page_help is defined and page_help %}
+    <details class="page-help" data-remember="help-{{ page_help.key }}" open>
+      <summary>{{ sm.icon("help", "sm q") }} About this page</summary>
+      <div>{{ page_help.text }}{% if page_help.url %} <a href="{{ page_help.url }}">Read the help &rarr;</a>{% endif %}</div>
+    </details>
+    {% endif %}
+    {% block content %}{% endblock %}
+  </main>
+</div>
+{% block scripts %}{% endblock %}
+</body>
+</html>

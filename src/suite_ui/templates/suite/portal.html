@@ -1,0 +1,53 @@
+{#- Suite-UI user layout (self-service pages): slim suite bar with app launcher, rounded cards on a soft glow.
+    Context (all optional): user, ui, flashes, user_links, signout_url, heading (or {% block heading %}), footer, audience ("user").
+-#}
+{% import "suite/_macros.html" as sm with context %}
+{% set ui = ui if ui is defined and ui else suite.ui() %}
+{% set uname = (user.name if user is mapping else user) if user is defined and user else "" %}
+{% set umail = (user.email if user is mapping else "") if user is defined and user else "" %}
+<!doctype html>
+<html lang="{% block lang %}en{% endblock %}" data-palette="{{ ui.palette }}" style="{{ ui.style }}" data-suite-app="{{ suite.app_id }}"
+      data-suite-static="{{ suite.static }}" data-suite-audience="{{ audience if audience is defined and audience else 'user' }}"
+      {% if suite.cookie_domain %}data-suite-cookie-domain="{{ suite.cookie_domain }}"{% endif %}>
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}{% endblock %} · {{ suite.org_name or suite.app_name }}</title>
+<link rel="icon" type="image/png" href="{{ suite.logo('favicon') }}">
+<link rel="stylesheet" href="{{ suite.asset('suite.css') }}">
+<script src="{{ suite.asset('suite.js') }}"></script>
+{% if launcher is not defined or launcher %}<script type="application/json" id="suite-apps">{{ suite.registry_json() }}</script>{% endif %}
+{% block head %}{% endblock %}
+</head>
+<body>
+<header class="suitebar">
+  {% if launcher is not defined or launcher %}<button class="tb-btn tb-waffle" type="button" data-launcher aria-label="App launcher" title="Apps">{{ sm.icon("waffle") }}</button>{% endif %}
+  <img src="{{ suite.logo('on-dark') }}" alt="{{ suite.org_name }}">
+  <span class="sep"></span>
+  <span class="what">{% block heading %}{{ heading if heading is defined and heading else suite.app_name }}{% endblock %}</span>
+  <div class="right">
+    {% if suite.copilot_url and (copilot is not defined or copilot) %}<a class="tb-btn tb-copilot" href="{{ suite.copilot_url }}" target="_blank" rel="noopener" title="Open Microsoft 365 Copilot">{{ sm.icon("copilot") }}<span>Copilot</span></a>{% endif %}
+    <button class="tb-btn" type="button" data-theme-toggle aria-label="Switch light / dark" title="Light / dark">{{ sm.icon("moon", "theme-ic-dark") }}{{ sm.icon("sun", "theme-ic-light") }}</button>
+    {% if uname %}
+      <div class="menu-wrap">
+        <button class="tb-btn" type="button" data-menu="m-portal" title="{{ uname }}"><span class="avatar">{{ sm.initials(uname) }}</span></button>
+        <div class="menu" id="m-portal">
+          <div class="head"><strong>{{ uname }}</strong><span class="small muted">{{ umail }}</span></div>
+          {% block user_menu %}{% endblock %}
+          {% if user_links is defined and user_links %}{% for l in user_links %}<a href="{{ l.href }}">{{ sm.icon(l.icon or 'user', 'sm') }} {{ l.label }}</a>{% endfor %}{% endif %}
+          {% if signout_url is defined and signout_url %}<a href="{{ signout_url }}">{{ sm.icon("signout", "sm") }} Sign out</a>{% endif %}
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</header>
+<div class="portal-page">
+  <div class="portal">
+    {% block banner %}{% endblock %}
+    {% for kind, msg in (flashes if flashes is defined and flashes else []) %}<div class="flash {{ kind }}">{{ msg }}</div>{% endfor %}
+    {% block content %}{% endblock %}
+    <p class="small muted" style="text-align:center;margin-top:28px">{% block footer %}{{ footer if footer is defined and footer else suite.org_name }}{% endblock %}</p>
+  </div>
+</div>
+{% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% import "suite/_macros.html" as sm with context %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+{% call sm.page_header("Dashboard", "Everything in this app at a glance. Use the launcher at the top left to jump to your other apps and Microsoft 365.") %}
+  <a class="btn" href="/portal">{{ sm.icon("laptop", "sm") }} User portal</a>
+  <a class="btn" href="/login">{{ sm.icon("lock", "sm") }} Sign-in page</a>
+  <a class="btn primary" href="#">{{ sm.icon("apps", "sm") }} New item</a>
+{% endcall %}
+<div class="grid g4" style="margin-bottom:16px">
+  {{ sm.stat(128, "Devices online", "/devices") }}{{ sm.stat(3, "Waiting for approval", "/approvals") }}{{ sm.stat("99.9%", "Uptime this month") }}{{ sm.stat(7, "Sites") }}
+</div>
+<div class="panel"><h2>Your apps</h2>{{ sm.apps_grid(suite.apps(audience="admin", groups=["sevans", "m365"])) }}</div>
+<div class="grid g2">
+  <div class="panel flush"><h2>Recent activity</h2>
+    <table><thead><tr><th>When</th><th>What</th><th>Status</th></tr></thead><tbody>
+      <tr><td class="mono">09:41</td><td>Printer added at Main Campus</td><td>{{ sm.badge("Approved", "ok") }}</td></tr>
+      <tr><td class="mono">09:12</td><td>Switch config change</td><td>{{ sm.badge("Pending", "warn") }}</td></tr>
+      <tr><td class="mono">08:55</td><td>Unknown MAC quarantined</td><td>{{ sm.badge("Blocked", "bad") }}</td></tr>
+    </tbody></table></div>
+  <div class="panel"><h2>Colour palettes</h2>
+    <p class="sub" style="margin-bottom:12px">Every app shares the same palettes. Try one:</p>
+    <div class="actions">
+      {% for k in ["valley-baptist", "cobalt", "teal", "violet", "forest", "crimson", "graphite"] %}<a class="btn sm" href="?palette={{ k }}">{{ k|replace("-", " ")|title }}</a>{% endfor %}</div>
+    <div class="hint-box" style="margin-top:14px">Light / dark follows the user across every app in the suite when <code>cookie_domain</code> is set.</div>
+  </div>
+</div>
+{% endblock %}

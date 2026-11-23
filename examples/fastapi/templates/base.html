@@ -1,0 +1,7 @@
+{# The app's own base: its menu, then the shared shell. #}
+{% set nav = [
+  ("Home", [("/", "Dashboard", "home")]),
+  ("Manage", [("/approvals", "Approvals", "check-circle"), ("/devices", "Devices", "laptop"), ("/sites", "Sites", "pin")]),
+  ("Settings", [("/settings", "General", "sliders"), ("/branding", "Branding & colours", "palette")]),
+] %}
+{% extends "suite/shell.html" %}

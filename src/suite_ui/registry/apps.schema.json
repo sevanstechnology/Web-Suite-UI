@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Suite-UI app registry",
+  "type": "object",
+  "required": ["groups"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "suite": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "Organisation / suite name shown at the bottom of the launcher" },
+        "label": { "type": "string", "description": "Launcher heading, default 'Apps'" },
+        "home_url": { "type": "string" }, "home_label": { "type": "string" },
+        "all_apps_url": { "type": "string" }, "all_apps_label": { "type": "string" },
+        "copilot_url": { "type": "string", "description": "Target of the Copilot button in the top bar; omit to hide it" }
+      },
+      "additionalProperties": false
+    },
+    "groups": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "label", "apps"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+          "label": { "type": "string" },
+          "external": { "type": "boolean", "description": "Open the group's apps in a new tab" },
+          "layout": { "enum": ["grid", "list"] },
+          "apps": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["id", "name", "url"],
+              "properties": {
+                "id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+                "name": { "type": "string" },
+                "description": { "type": "string" },
+                "url": { "type": "string" },
+                "icon": { "type": "string", "description": "Icon id from icons.svg (without i-), or an image URL" },
+                "image": { "type": "string", "description": "Image URL used instead of the icon" },
+                "color": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}$" },
+                "audience": { "type": "array", "items": { "enum": ["admin", "user"] } },
+                "external": { "type": "boolean" },
+                "hidden": { "type": "boolean" }
+              },
+              "additionalProperties": false
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

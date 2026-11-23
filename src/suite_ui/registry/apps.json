@@ -1,0 +1,54 @@
+{
+  "$schema": "./apps.schema.json",
+  "suite": {
+    "name": "Sevans Technology",
+    "label": "Apps",
+    "home_url": "https://m365.cloud.microsoft/",
+    "home_label": "Microsoft 365 home",
+    "all_apps_url": "https://m365.cloud.microsoft/apps",
+    "all_apps_label": "All apps",
+    "copilot_url": "https://m365.cloud.microsoft/chat"
+  },
+  "groups": [
+    {
+      "id": "sevans",
+      "label": "Your apps",
+      "apps": [
+        { "id": "entranac", "name": "EntraNAC", "description": "Network access control and RADIUS on Entra ID",
+          "url": "https://entranac.example.org/", "icon": "shield-check", "color": "#007ea6", "audience": ["admin"] },
+        { "id": "entranac-portal", "name": "My devices", "description": "Register and manage your Wi-Fi devices (EntraNAC)",
+          "url": "https://entranac.example.org/enroll", "icon": "laptop", "color": "#00a3d6", "audience": ["admin", "user"] },
+        { "id": "facility-hub", "name": "Facility Hub", "description": "Facility Hub",
+          "url": "https://facility-hub.example.org/", "icon": "building", "color": "#5b4bd4" }
+      ]
+    },
+    {
+      "id": "m365",
+      "label": "Microsoft 365",
+      "external": true,
+      "apps": [
+        { "id": "copilot", "name": "Copilot", "description": "Microsoft 365 Copilot Chat", "url": "https://m365.cloud.microsoft/chat", "icon": "copilot", "color": "#6b4fd8" },
+        { "id": "outlook", "name": "Outlook", "description": "Email and calendar", "url": "https://outlook.cloud.microsoft/mail/", "icon": "mail", "color": "#0f6cbd" },
+        { "id": "teams", "name": "Teams", "description": "Chat, meetings and calls", "url": "https://teams.cloud.microsoft/", "icon": "chat", "color": "#5b5fc7" },
+        { "id": "onedrive", "name": "OneDrive", "description": "Your files", "url": "https://www.office.com/launch/onedrive", "icon": "cloud", "color": "#0a66c2" },
+        { "id": "sharepoint", "name": "SharePoint", "description": "Team sites and intranet", "url": "https://www.office.com/launch/sharepoint", "icon": "globe", "color": "#037075" },
+        { "id": "word", "name": "Word", "description": "Documents", "url": "https://word.cloud.microsoft/", "icon": "doc", "color": "#185abd" },
+        { "id": "excel", "name": "Excel", "description": "Spreadsheets", "url": "https://excel.cloud.microsoft/", "icon": "table", "color": "#107c41" },
+        { "id": "powerpoint", "name": "PowerPoint", "description": "Presentations", "url": "https://powerpoint.cloud.microsoft/", "icon": "slides", "color": "#c43e1c" },
+        { "id": "calendar", "name": "Calendar", "description": "Outlook calendar", "url": "https://outlook.cloud.microsoft/calendar/", "icon": "calendar", "color": "#0f6cbd" }
+      ]
+    },
+    {
+      "id": "admin",
+      "label": "Admin centers",
+      "external": true,
+      "layout": "list",
+      "apps": [
+        { "id": "m365-admin", "name": "Microsoft 365 admin", "description": "Users, licences and billing", "url": "https://admin.cloud.microsoft/", "icon": "gear", "color": "#44505c", "audience": ["admin"] },
+        { "id": "entra-admin", "name": "Microsoft Entra admin center", "description": "Identity, groups and app registrations", "url": "https://entra.microsoft.com/", "icon": "id", "color": "#0f6cbd", "audience": ["admin"] },
+        { "id": "intune-admin", "name": "Intune admin center", "description": "Devices, compliance and SCEP certificates", "url": "https://intune.microsoft.com/", "icon": "device-check", "color": "#037075", "audience": ["admin"] },
+        { "id": "azure-portal", "name": "Azure portal", "description": "VMs, networking and subscriptions", "url": "https://portal.azure.com/", "icon": "server", "color": "#0a66c2", "audience": ["admin"] }
+      ]
+    }
+  ]
+}

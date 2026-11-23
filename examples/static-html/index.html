@@ -1,0 +1,37 @@
+<!doctype html>
+<!-- Suite-UI with no framework at all. Serve the repository root, e.g.  python -m http.server 8000
+     and open http://localhost:8000/examples/static-html/
+     In your own app, point the three paths below at wherever you put the files from the release zip (or the CDN). -->
+<html lang="en" data-palette="valley-baptist" data-suite-app="static-demo"
+      data-suite-static="../../src/suite_ui/static/suite" data-suite-apps="../../src/suite_ui/registry/apps.json">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Static demo · Suite-UI</title>
+<link rel="stylesheet" href="../../src/suite_ui/static/suite/suite.css">
+<script src="../../src/suite_ui/static/suite/suite.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <button class="tb-btn tb-waffle" type="button" data-launcher aria-label="App launcher"><svg class="ic"><use href="../../src/suite_ui/static/suite/icons.svg#i-waffle"/></svg></button>
+  <button class="tb-btn" type="button" data-nav-toggle aria-label="Menu"><svg class="ic"><use href="../../src/suite_ui/static/suite/icons.svg#i-menu"/></svg></button>
+  <a class="tb-brand" href="./"><img src="../../src/suite_ui/static/suite/brand/logo-horizontal-white.png" alt="Valley Baptist"><span class="sep"></span><span class="app">Static demo</span></a>
+  <div class="tb-search"><input type="search" id="tb-search" placeholder="Search pages and apps"><svg class="ic"><use href="../../src/suite_ui/static/suite/icons.svg#i-search"/></svg><div class="search-results" id="tb-results"></div></div>
+  <div class="tb-right">
+    <button class="tb-btn" type="button" data-theme-toggle aria-label="Light / dark"><svg class="ic theme-ic-dark"><use href="../../src/suite_ui/static/suite/icons.svg#i-moon"/></svg><svg class="ic theme-ic-light"><use href="../../src/suite_ui/static/suite/icons.svg#i-sun"/></svg></button>
+  </div>
+</header>
+<div class="shell">
+  <nav class="nav" aria-label="Main menu">
+    <section class="nav-sec has-active" data-sec="home"><div class="nav-items">
+      <a href="./" class="active" data-group="Home" data-icon="home"><svg class="ic"><use href="../../src/suite_ui/static/suite/icons.svg#i-home"/></svg><span class="label">Dashboard</span></a>
+    </div></section>
+    <div class="foot">Plain HTML + suite.css + suite.js</div>
+  </nav>
+  <main data-icon="home">
+    <div class="top"><div><h1>Dashboard</h1><p class="sub">The same shell, without Python. Open the launcher at the top left.</p></div></div>
+    <div class="panel"><h2>Hello</h2><p>Every class from <code>suite.css</code> works here: panels, tables, badges, buttons, forms.</p>
+      <button class="btn primary">Primary</button> <button class="btn">Default</button> <span class="badge ok">OK</span></div>
+  </main>
+</div>
+</body>
+</html>

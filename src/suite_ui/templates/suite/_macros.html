@@ -1,0 +1,66 @@
+{#- Suite-UI macros. Import with:  {% import "suite/_macros.html" as sm with context %} -#}
+
+{% macro icon(name, cls="") -%}
+<svg class="ic{{ ' ' ~ cls if cls }}" aria-hidden="true"><use href="{{ suite.static }}/icons.svg#i-{{ name }}"/></svg>
+{%- endmacro %}
+
+{% macro initials(name) -%}
+{{ ((name or "?").split("@")[0].replace(".", " ").replace("_", " ").split() | map("first") | join)[:2] | upper or "?" }}
+{%- endmacro %}
+
+{% macro theme_switch() -%}
+<div class="theme-switch" role="group" aria-label="Colour theme"><button type="button" data-theme-set="auto" aria-pressed="false">Auto</button><button type="button" data-theme-set="light" aria-pressed="false">Light</button><button type="button" data-theme-set="dark" aria-pressed="false">Dark</button></div>
+{%- endmacro %}
+
+{#- Page header with title, description and a command bar:
+    {% call sm.page_header("Devices", "Everything on the network") %}<a class="btn primary" href="/new">Add</a>{% endcall %} -#}
+{% macro page_header(title, sub="") -%}
+<div class="top">
+  <div><h1>{{ title }}</h1>{% if sub %}<p class="sub">{{ sub }}</p>{% endif %}</div>
+  {% if caller is defined %}<div class="actions">{{ caller() }}</div>{% endif %}
+</div>
+{%- endmacro %}
+
+{% macro stat(n, label, href="") -%}
+<div class="stat">{% if href %}<a href="{{ href }}">{% endif %}<div class="n">{{ n }}</div><div class="l">{{ label }}</div>{% if href %}</a>{% endif %}</div>
+{%- endmacro %}
+
+{% macro badge(text, kind="") -%}<span class="badge {{ kind }}">{{ text }}</span>{%- endmacro %}
+
+{% macro yesno(v, yes="Enabled", no="Disabled") -%}
+{% if v %}<span class="badge ok">{{ yes }}</span>{% else %}<span class="badge">{{ no }}</span>{% endif %}
+{%- endmacro %}
+
+{% macro ts(v, fmt='%Y-%m-%d %H:%M') -%}{% if v %}<span class="nowrap" title="{{ v }}">{{ v.astimezone().strftime(fmt) }}</span>{% else %}<span class="muted">—</span>{% endif %}{%- endmacro %}
+
+{% macro empty(text="Nothing here yet.") -%}<div class="empty">{{ text }}</div>{%- endmacro %}
+
+{#- Cards linking to the other apps in the suite, for a home or dashboard page.
+    {{ sm.apps_grid(suite.apps(audience="admin", groups=["sevans", "m365"])) }} -#}
+{% macro apps_grid(apps) -%}
+<div class="app-cards">
+{% for a in apps if a.id != suite.app_id %}
+  <a class="app-card" href="{{ a.url }}"{% if a.external %} target="_blank" rel="noopener"{% endif %}>
+    <span class="sl-tile" style="--tile:{{ a.color or '' }}">{% if a.image %}<img src="{{ a.image }}" alt="">{% else %}{{ icon(a.icon or 'apps') }}{% endif %}</span>
+    <span><strong>{{ a.name }}</strong><span class="d">{{ a.description or a.group_label }}</span></span>
+  </a>
+{% endfor %}
+</div>
+{%- endmacro %}
+
+{#- A public link with Copy / E-mail / Teams / QR / native-share buttons (handled by suite.js).
+    qr_url: an endpoint in your app that returns a QR SVG for ?u=<url>; omit to hide the QR button. -#}
+{% macro share(url, title, text="", qr_url="") -%}
+<div class="share" data-share-url="{{ url }}" data-share-title="{{ title }}" data-share-text="{{ text or title }}">
+  <div class="share-head"><strong>{{ title }}</strong></div>
+  <div class="share-row">
+    <input type="text" readonly class="mono share-url" value="{{ url }}" aria-label="{{ title }} link" onclick="this.select()">
+    <button type="button" class="btn sm" data-share="copy" title="Copy link">{{ icon("copy") }}<span>Copy</span></button>
+    <a class="btn sm" data-share="mail" href="mailto:?subject={{ title|urlencode }}&amp;body={{ ((text or title) ~ '\n\n' ~ url)|urlencode }}" title="Send by e-mail">{{ icon("mail") }}<span>E-mail</span></a>
+    <a class="btn sm" data-share="teams" target="_blank" rel="noopener" href="https://teams.microsoft.com/share?href={{ url|urlencode }}&amp;msgText={{ (text or title)|urlencode }}&amp;preview=true" title="Share in Microsoft Teams">{{ icon("teams") }}<span>Teams</span></a>
+    {% if qr_url %}<button type="button" class="btn sm" data-share="qr" title="Show QR code">{{ icon("qr") }}<span>QR</span></button>{% endif %}
+    <button type="button" class="btn sm share-native" data-share="native" title="Share…" hidden>{{ icon("share") }}<span>Share</span></button>
+  </div>
+  {% if qr_url %}<div class="share-qr" hidden><img alt="QR code for {{ title }}" width="180" height="180" loading="lazy" data-src="{{ qr_url }}?u={{ url|urlencode }}"><a class="small" download="{{ title|lower|replace(' ', '-') }}-qr.svg" data-qr-dl>Download QR (SVG)</a></div>{% endif %}
+</div>
+{%- endmacro %}

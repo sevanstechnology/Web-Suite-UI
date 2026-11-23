@@ -1,0 +1,36 @@
+{#- Suite-UI sign-in page. Context: ui, flashes, heading ("Sign in"), sub, sso_url + sso_label ("Sign in with Microsoft"),
+    and {% block form %} for a local username / password form (shown below an "or" divider when sso_url is set).
+-#}
+{% import "suite/_macros.html" as sm with context %}
+{% set ui = ui if ui is defined and ui else suite.ui() %}
+<!doctype html>
+<html lang="en" data-palette="{{ ui.palette }}" style="{{ ui.style }}" data-suite-app="{{ suite.app_id }}" data-suite-static="{{ suite.static }}"
+      {% if suite.cookie_domain %}data-suite-cookie-domain="{{ suite.cookie_domain }}"{% endif %}>
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sign in · {{ suite.app_name }}</title>
+<link rel="icon" type="image/png" href="{{ suite.logo('favicon') }}">
+<link rel="stylesheet" href="{{ suite.asset('suite.css') }}">
+<script src="{{ suite.asset('suite.js') }}"></script>
+{% block head %}{% endblock %}
+</head>
+<body>
+<div class="login-wrap">
+  <div class="login">
+    <img class="logo logo-on-light" src="{{ suite.logo('on-light') }}" alt="{{ suite.org_name }}">
+    <img class="logo logo-on-dark" src="{{ suite.logo('on-dark') }}" alt="{{ suite.org_name }}">
+    <h1>{{ heading if heading is defined and heading else "Sign in" }}</h1>
+    <p class="sub" style="margin-bottom:20px">{{ sub if sub is defined and sub else "to " ~ suite.app_name }}</p>
+    {% for kind, msg in (flashes if flashes is defined and flashes else []) %}<div class="flash {{ kind }}">{{ msg }}</div>{% endfor %}
+    {% if sso_url is defined and sso_url %}
+      <a class="btn primary" style="width:100%;justify-content:center" href="{{ sso_url }}">{{ sm.icon("id") }} {{ sso_label if sso_label is defined and sso_label else "Sign in with Microsoft" }}</a>
+    {% endif %}
+    {% set form_html %}{% block form %}{% endblock %}{% endset %}
+    {% if form_html|trim %}{% if sso_url is defined and sso_url %}<div class="or">or</div>{% endif %}{{ form_html }}{% endif %}
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:24px">
+      <span class="small muted">{{ suite.org_name }}</span>{{ sm.theme_switch() }}
+    </div>
+  </div>
+</div>
+</body>
+</html>
