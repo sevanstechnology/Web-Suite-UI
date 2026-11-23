@@ -1,4 +1,4 @@
-# Suite-UI
+# Web Suite UI (Suite-UI)
 
 The shared interface for Sevans Technology apps. It started as EntraNAC's interface and now lives here so every new
 project gets the same Microsoft 365 / Copilot look and links to the others.
@@ -21,7 +21,7 @@ project gets the same Microsoft 365 / Copilot look and links to the others.
 ## Use it in a Python app (FastAPI / Starlette)
 
 ```bash
-pip install "suite-ui @ git+https://github.com/sevanstechnology/Suite-UI@v0.1.0"
+pip install "suite-ui @ git+https://github.com/sevanstechnology/Web-Suite-UI@v0.1.0"
 ```
 
 ```python

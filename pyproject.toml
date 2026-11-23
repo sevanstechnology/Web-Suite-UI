@@ -16,7 +16,7 @@ flask = ["flask>=3.0"]
 dev = ["pytest>=8", "fastapi>=0.110", "httpx>=0.27", "uvicorn>=0.29", "jsonschema>=4.21"]
 
 [project.urls]
-Source = "https://github.com/sevanstechnology/Suite-UI"
+Source = "https://github.com/sevanstechnology/Web-Suite-UI"
 
 [tool.hatch.version]
 path = "VERSION"

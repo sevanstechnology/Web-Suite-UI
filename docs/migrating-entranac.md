@@ -3,7 +3,7 @@
 EntraNAC's interface is where Suite-UI came from, so the markup and class names are the same. The switch is mostly
 deleting files.
 
-1. `api/requirements.txt`: add `suite-ui @ git+https://github.com/sevanstechnology/Suite-UI@v0.1.0`
+1. `api/requirements.txt`: add `suite-ui @ git+https://github.com/sevanstechnology/Web-Suite-UI@v0.1.0`
    (private repo: the Docker build needs a read token, or vendor the wheel from the release).
 2. `api/app/main.py`, after `templates = Jinja2Templates(...)`:
    ```python
