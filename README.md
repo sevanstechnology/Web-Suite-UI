@@ -18,6 +18,9 @@ project gets the same Microsoft 365 / Copilot look and links to the others.
 |---|---|---|
 | ![Dark](docs/img/home-dark.png) | ![Portal](docs/img/portal-launcher.png) | ![Sign-in](docs/img/login.png) |
 
+**Used by:** [EntraNAC](https://github.com/sevanstechnology/EntraNAC) (vendored copy, synced with its
+`scripts/sync-suite-ui.sh` - see [docs/migrating-entranac.md](docs/migrating-entranac.md)).
+
 ## Use it in a Python app (FastAPI / Starlette)
 
 ```bash

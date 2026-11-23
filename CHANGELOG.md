@@ -1,5 +1,8 @@
 # Changelog
 
+## Unreleased
+- Docs: EntraNAC now runs on Suite-UI (vendored copy); how to keep both repositories in step.
+
 ## 0.1.0 - 2026-11-23
 - First release, extracted from EntraNAC's interface: `suite.css`, `suite.js`, icon sprite, seven colour palettes
   (Valley Baptist default) and the accessible custom-palette builder.
