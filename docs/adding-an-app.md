@@ -56,6 +56,7 @@ and sign users in with Microsoft; they'll already have a session when they open 
 
 | App | Address | Hosting |
 |---|---|---|
+| Church Help (`church-help`) | https://valleybaptist.help/ | Azure Static Web Apps (plain HTML); DNS on Cloudflare |
 | Facility Hub (`facility-hub`) | https://facility.valleybaptist.help/ | Azure App Service (Linux, Node 22); DNS on Cloudflare (CNAME, DNS only) with an App Service managed certificate; staff sign in with Entra ID |
 | EntraNAC (`entranac`, `entranac-portal`) | placeholder in `apps.json`; set per deployment | ESXi + Azure pair |
 
