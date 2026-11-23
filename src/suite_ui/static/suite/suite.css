@@ -491,3 +491,6 @@ ol.steps li { margin: 6px 0; } ol.steps ul { margin: 4px 0; padding-left: 18px; 
 
 @media (max-width: 860px) { .suite-launcher { width: 100vw; border-radius: 0; } .tb-copilot span { display: none; } .tb-brand .org { display: none; } }
 @media print { .suite-launcher { display: none !important; } }
+
+/* the hidden attribute must win over component display rules (count badges, menus drawn by scripts) */
+[hidden] { display: none !important; }
