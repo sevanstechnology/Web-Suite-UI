@@ -71,4 +71,7 @@
 <symbol id="i-external" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9"/><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></symbol>
 <symbol id="i-dismiss" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
 <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 3.8 2.5 5.1 5.6.8-4 3.9.9 5.6L12 16.6l-5 2.6.9-5.6-4-3.9 5.6-.8z"/></symbol>
+<symbol id="i-door" viewBox="0 0 24 24"><path d="M6 21V4.5a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1V21M3.5 21h17"/><circle cx="14.5" cy="12.5" r=".9"/></symbol>
+<symbol id="i-sync" viewBox="0 0 24 24"><path d="M19.5 11A7.5 7.5 0 0 0 6.2 7M4.5 4v3.5H8M4.5 13a7.5 7.5 0 0 0 13.3 4M19.5 20v-3.5H16"/></symbol>
+<symbol id="i-ticket" viewBox="0 0 24 24"><path d="M3.5 8.5a1 1 0 0 1 1-1h15a1 1 0 0 1 1 1v2a2 2 0 0 0 0 4v2a1 1 0 0 1-1 1h-15a1 1 0 0 1-1-1v-2a2 2 0 0 0 0-4z"/><path d="M14 7.5v9" stroke-dasharray="1.6 2.4"/></symbol>
 </svg>

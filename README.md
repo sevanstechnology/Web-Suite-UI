@@ -19,7 +19,8 @@ project gets the same Microsoft 365 / Copilot look and links to the others.
 | ![Dark](docs/img/home-dark.png) | ![Portal](docs/img/portal-launcher.png) | ![Sign-in](docs/img/login.png) |
 
 **Used by:** [EntraNAC](https://github.com/sevanstechnology/EntraNAC) (vendored copy, synced with its
-`scripts/sync-suite-ui.sh` - see [docs/migrating-entranac.md](docs/migrating-entranac.md)).
+`scripts/sync-suite-ui.sh` - see [docs/migrating-entranac.md](docs/migrating-entranac.md)) and
+[Facility Hub](https://github.com/sevanstechnology/Facility-Hub) (Node app, static files - see [docs/using-from-node.md](docs/using-from-node.md)).
 
 ## Use it in a Python app (FastAPI / Starlette)
 
@@ -61,7 +62,8 @@ Flask: `suite.init_flask(app)` instead of `mount()`.
 Download `suite-ui-<version>.zip` from the [releases](../../releases), serve the files, and copy the markup from
 [`examples/static-html/index.html`](examples/static-html/index.html). Point `data-suite-apps` on `<html>` at a
 hosted copy of `apps.json` (it must allow CORS if it's on another domain) or embed it in a
-`<script type="application/json" id="suite-apps">` block.
+`<script type="application/json" id="suite-apps">` block. Apps that draw their menu in the browser call
+`SuiteUI.refresh()` after rendering (see [docs/using-from-node.md](docs/using-from-node.md)).
 
 ## Linking a new project into the suite
 

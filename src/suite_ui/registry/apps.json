@@ -18,7 +18,7 @@
           "url": "https://entranac.example.org/", "icon": "shield-check", "color": "#007ea6", "audience": ["admin"] },
         { "id": "entranac-portal", "name": "My devices", "description": "Register and manage your Wi-Fi devices (EntraNAC)",
           "url": "https://entranac.example.org/enroll", "icon": "laptop", "color": "#00a3d6", "audience": ["admin", "user"] },
-        { "id": "facility-hub", "name": "Facility Hub", "description": "Facility Hub",
+        { "id": "facility-hub", "name": "Facility Hub", "description": "Events, door schedules and the facilities help desk",
           "url": "https://facility-hub.example.org/", "icon": "building", "color": "#5b4bd4" }
       ]
     },

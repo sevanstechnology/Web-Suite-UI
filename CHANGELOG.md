@@ -1,6 +1,12 @@
 # Changelog
 
 ## Unreleased
+- New icons: `door`, `sync`, `ticket` (original artwork).
+- `suite.js`: `SuiteUI.refresh()` re-applies the page icon, remembered `<details>` and menu-section state after an app draws
+  its menu or page in the browser (single-page apps); the top-bar search now reads the menu when you search, so a menu
+  drawn after load is found. Server-rendered apps are unaffected.
+- Registry: a real description for the Facility Hub tile.
+- Facility Hub (Node, no Python) now runs on the static files: see docs/using-from-node.md.
 - Docs: EntraNAC now runs on Suite-UI (vendored copy); how to keep both repositories in step.
 
 ## 0.1.0 - 2026-11-23

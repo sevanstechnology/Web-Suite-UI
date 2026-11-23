@@ -130,20 +130,25 @@
     }
 
     // page icon next to the page title, from the current menu entry
-    var main = document.querySelector("main[data-icon]"), h1 = document.querySelector("main .top h1");
-    if (main && h1 && main.getAttribute("data-icon") && !h1.querySelector(".page-icon")) {
-      var wrap = h1.parentNode, span = document.createElement("span"), row = document.createElement("div");
-      span.className = "page-icon"; span.innerHTML = icon(main.getAttribute("data-icon"));
-      row.className = "page-title"; wrap.insertBefore(row, h1); row.appendChild(span); row.appendChild(h1);
+    function decorate() {
+      var main = document.querySelector("main[data-icon]"), h1 = document.querySelector("main .top h1");
+      if (main && h1 && main.getAttribute("data-icon") && !h1.querySelector(".page-icon") && !(h1.parentNode.querySelector(".page-icon"))) {
+        var wrap = h1.parentNode, span = document.createElement("span"), row = document.createElement("div");
+        span.className = "page-icon"; span.innerHTML = icon(main.getAttribute("data-icon"));
+        row.className = "page-title"; wrap.insertBefore(row, h1); row.appendChild(span); row.appendChild(h1);
+      }
     }
 
     // <details data-remember="key"> keeps its open / closed state
-    var rem = document.querySelectorAll("details[data-remember]");
-    for (var ri = 0; ri < rem.length; ri++) (function (d) {
-      var k = "suite-open:" + APP + ":" + d.getAttribute("data-remember");
-      if (get(k, "") === "closed") d.removeAttribute("open");
-      d.addEventListener("toggle", function () { put(k, d.open ? "open" : "closed"); });
-    })(rem[ri]);
+    function initRemember() {
+      var rem = document.querySelectorAll("details[data-remember]");
+      for (var ri = 0; ri < rem.length; ri++) (function (d) {
+        if (d._suiteRem) return; d._suiteRem = true;
+        var k = "suite-open:" + APP + ":" + d.getAttribute("data-remember");
+        if (get(k, "") === "closed") d.removeAttribute("open");
+        d.addEventListener("toggle", function () { put(k, d.open ? "open" : "closed"); });
+      })(rem[ri]);
+    }
 
     // collapsible menu sections: closed sections are remembered; the current page's section stays open
     function closedSet() { try { return JSON.parse(get(SECKEY, "[]")) || []; } catch (e) { return []; } }
@@ -156,10 +161,17 @@
       for (var i = 0; i < ss.length; i++) c.push(ss[i].getAttribute("data-sec"));
       put(SECKEY, JSON.stringify(c));
     }
+    function initSections() {
+      var closed = closedSet(), secs = document.querySelectorAll(".nav-sec[data-sec]");
+      for (var si = 0; si < secs.length; si++) {
+        if (secs[si]._suiteSec) continue; secs[si]._suiteSec = true;
+        if (closed.indexOf(secs[si].getAttribute("data-sec")) >= 0 && !secs[si].classList.contains("has-active")) setSec(secs[si], true);
+      }
+    }
     if (navigator.share) { var ns = document.querySelectorAll(".share-native"); for (var n = 0; n < ns.length; n++) ns[n].hidden = false; }
-    var closed = closedSet(), secs = document.querySelectorAll(".nav-sec[data-sec]");
-    for (var si = 0; si < secs.length; si++)
-      if (closed.indexOf(secs[si].getAttribute("data-sec")) >= 0 && !secs[si].classList.contains("has-active")) setSec(secs[si], true);
+    function refresh() { decorate(); initRemember(); initSections(); }
+    refresh();
+    if (window.SuiteUI) window.SuiteUI.refresh = refresh;   // for apps that render their menu / pages in the browser
 
     document.addEventListener("click", function (e) {
       var t = e.target.closest ? e.target : null;
@@ -231,22 +243,24 @@
     // search: this app's menu pages first, then the other apps in the suite, then "search the help"
     var box = document.getElementById("tb-search"), res = document.getElementById("tb-results");
     if (!box || !res) return;
-    var pages = [], helpSearch = attr("data-suite-help-search", "");
-    var links = document.querySelectorAll(".nav a[href]");
-    for (var i = 0; i < links.length; i++) {
-      var l = links[i], lab = l.querySelector(".label");
-      pages.push({ href: l.getAttribute("href"), label: lab ? lab.textContent : l.textContent, group: l.getAttribute("data-group") || "", icon: l.getAttribute("data-icon") || "chevron" });
-    }
-    withRegistry(function (r) {
-      (r.groups || []).forEach(function (g) { g.apps.forEach(function (a) {
-        if (a.id !== APP) pages.push({ href: a.url, label: a.name, group: g.label, icon: a.icon || "apps", ext: external(a, g), kw: a.description || "" });
+    var helpSearch = attr("data-suite-help-search", "");
+    // built on every search, so a menu that is drawn after page load (single-page apps) is still found
+    function collectPages() {
+      var out = [], links = document.querySelectorAll(".nav a[href]");
+      for (var i = 0; i < links.length; i++) {
+        var l = links[i], lab = l.querySelector(".label");
+        out.push({ href: l.getAttribute("href"), label: lab ? lab.textContent : l.textContent, group: l.getAttribute("data-group") || "", icon: l.getAttribute("data-icon") || "chevron" });
+      }
+      if (registry) (registry.groups || []).forEach(function (g) { g.apps.forEach(function (a) {
+        if (a.id !== APP) out.push({ href: a.url, label: a.name, group: g.label, icon: a.icon || "apps", ext: external(a, g), kw: a.description || "" });
       }); });
-    });
+      return out;
+    }
     var sel = 0;
     function render() {
       var q = box.value.trim().toLowerCase();
       if (!q) { res.classList.remove("open"); return; }
-      var hits = pages.filter(function (p) { return (p.label + " " + p.group + " " + (p.kw || "")).toLowerCase().indexOf(q) >= 0; }).slice(0, 9);
+      var hits = collectPages().filter(function (p) { return (p.label + " " + p.group + " " + (p.kw || "")).toLowerCase().indexOf(q) >= 0; }).slice(0, 9);
       var html = hits.map(function (p, i) {
         return '<a href="' + esc(p.href) + '" class="' + (i === sel ? "sel" : "") + '"' + (p.ext ? ' target="_blank" rel="noopener"' : "") + ">" +
                icon(p.icon, "sm") + esc(p.label) + '<span class="where">' + esc(p.group) + "</span></a>";
@@ -266,5 +280,5 @@
     });
   });
 
-  window.SuiteUI = { apply: apply, setTheme: function (p) { savePref(p); apply(p); }, registry: withRegistry };
+  window.SuiteUI = { apply: apply, refresh: function () {}, setTheme: function (p) { savePref(p); apply(p); }, registry: withRegistry };
 })();

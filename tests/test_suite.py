@@ -83,3 +83,14 @@ def test_palette_style(client):
 def test_static_served(client):
     for f in ("suite.css", "suite.js", "icons.svg", "palettes.json", "brand/favicon.png"):
         assert client.get(f"/static/suite/{f}").status_code == 200, f
+
+
+def test_icons_for_facility_apps_exist():
+    sprite = (STATIC_DIR / "suite/icons.svg").read_text()
+    for name in ("door", "sync", "ticket", "calendar", "building"):
+        assert f'id="i-{name}"' in sprite, name
+
+
+def test_js_exposes_refresh_for_single_page_apps():
+    js = (STATIC_DIR / "suite/suite.js").read_text()
+    assert "SuiteUI.refresh" in js and "function collectPages()" in js
