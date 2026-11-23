@@ -1,6 +1,8 @@
 # Changelog
 
 ## Unreleased
+- Church Help (plain HTML site, Azure Static Web Apps) now runs on the static files; new registry tile `church-help`.
+- Fix: text boxes with no `type` attribute, and `tel` / `date` / `time` boxes, get the same style as `text` boxes.
 - New icons: `door`, `sync`, `ticket` (original artwork).
 - `suite.js`: `SuiteUI.refresh()` re-applies the page icon, remembered `<details>` and menu-section state after an app draws
   its menu or page in the browser (single-page apps); the top-bar search now reads the menu when you search, so a menu

@@ -197,8 +197,8 @@ tbody tr:hover { background: var(--hover); }
 /* forms */
 form.inline { display: inline; }
 label { display: block; font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 4px; }
-input[type=text], input[type=password], input[type=number], input[type=datetime-local], input[type=search], input[type=email],
-input[type=url], input[type=file], select, textarea {
+input:not([type]), input[type=text], input[type=password], input[type=number], input[type=datetime-local], input[type=search], input[type=email],
+input[type=tel], input[type=date], input[type=time], input[type=url], input[type=file], select, textarea {
   width: 100%; min-height: 32px; padding: 5px 10px; border: 1px solid var(--line-strong); border-bottom-color: var(--muted); border-radius: 4px;
   font: inherit; background: var(--panel); color: var(--ink);
 }
