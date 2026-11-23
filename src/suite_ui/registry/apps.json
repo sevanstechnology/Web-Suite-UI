@@ -21,7 +21,7 @@
         { "id": "church-help", "name": "Church Help", "description": "Help desk, help articles and system status for staff and volunteers",
           "url": "https://valleybaptist.help/", "icon": "help", "color": "#00a3d6" },
         { "id": "facility-hub", "name": "Facility Hub", "description": "Events, door schedules and the facilities help desk",
-          "url": "https://facility-hub.example.org/", "icon": "building", "color": "#5b4bd4" }
+          "url": "https://facility.valleybaptist.help/", "icon": "building", "color": "#5b4bd4" }
       ]
     },
     {

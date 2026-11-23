@@ -5,8 +5,8 @@
 Add an entry to `src/suite_ui/registry/apps.json`, in the `sevans` group ("Your apps"):
 
 ```json
-{ "id": "facility-hub", "name": "Facility Hub", "description": "Rooms, maintenance and events",
-  "url": "https://facility-hub.example.org/", "icon": "building", "color": "#5b4bd4" }
+{ "id": "facility-hub", "name": "Facility Hub", "description": "Events, door schedules and the facilities help desk",
+  "url": "https://facility.valleybaptist.help/", "icon": "building", "color": "#5b4bd4" }
 ```
 
 | Field | Meaning |
@@ -51,3 +51,14 @@ If the apps share a parent domain (for example `nac.sevans.io`, `facilities.seva
 
 Suite-UI only does the interface. For a seamless switch between apps, register each one in the same Entra ID tenant
 and sign users in with Microsoft; they'll already have a session when they open the next app from the launcher.
+
+## Where the apps run (Valley Baptist)
+
+| App | Address | Hosting |
+|---|---|---|
+| Facility Hub (`facility-hub`) | https://facility.valleybaptist.help/ | Azure App Service (Linux, Node 22); DNS on Cloudflare (CNAME, DNS only) with an App Service managed certificate; staff sign in with Entra ID |
+| EntraNAC (`entranac`, `entranac-portal`) | placeholder in `apps.json`; set per deployment | ESXi + Azure pair |
+
+The registry holds the Facility Hub address as its default, so other apps show the right link without extra settings. Any deployment can still
+override it with `SUITE_APP_URL_FACILITY_HUB` (for example a test site). The domain's DNS is in Cloudflare (zone `valleybaptist.help`); see
+Facility Hub's `docs/AZURE.md` for the records and the steps.
