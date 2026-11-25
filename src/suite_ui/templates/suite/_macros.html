@@ -84,11 +84,11 @@
     <span class="nm">{{ p.label }}{% if key == suite.default_palette %} <span class="small muted">default</span>{% endif %}</span></label>
 {% endfor %}
   <label class="custom"><input type="radio" name="palette" value="custom"{% if cur.palette == "custom" %} checked{% endif %}>
-    <span class="sw"><span style="background:{{ cur.colors.top if cur.palette == 'custom' else '#414042' }}"></span><span style="background:{{ cur.accent if cur.palette == 'custom' else '#00a3d6' }}"></span></span>
+    <span class="sw"><span style="background:{{ cur.colors.top if cur.palette == 'custom' else '#414042' }}"></span><span style="background:{{ cur.accent if cur.palette == 'custom' else '#00a4d6' }}"></span></span>
     <span class="nm">Custom</span></label>
 </div>
 <div class="palette-custom">
-  <label>Main colour <input type="color" name="accent" value="{{ cur.accent if cur.palette == 'custom' and cur.accent else '#00a3d6' }}"></label>
+  <label>Main colour <input type="color" name="accent" value="{{ cur.accent if cur.palette == 'custom' and cur.accent else '#00a4d6' }}"></label>
   <label>Top bar <input type="color" name="top" value="{{ cur.top if cur.palette == 'custom' and cur.top else cur.colors.top }}"></label>
   <p class="small muted">Pick "Custom" above to use these. Buttons and the top bar (made darker if needed) are adjusted automatically so white text on them stays readable (WCAG 4.5:1).</p>
 </div>

@@ -1,6 +1,9 @@
 # Changelog
 
 ## Unreleased
+- Valley Baptist blue now matches valleybaptist.org exactly: **#00a4d6** for the top bar, buttons, links and accents
+  (buttons and links were a darker #007ea6). Valley Baptist Gray keeps the gray top bar with the same blue buttons.
+  As on the church website, white text on this blue is about 2.9:1.
 - Fix: `SuiteUI.refresh()` now also draws a `[data-palette-picker]` added after page load, so apps that build their
   menus in the browser (Church Help, Facility Hub) can show the Colours picker.
 - The default Valley Baptist look now has a **VBC blue top bar** (#00a3d6). The previous gray top bar is the new
