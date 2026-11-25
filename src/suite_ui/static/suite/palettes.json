@@ -5,6 +5,16 @@
       "label": "Valley Baptist",
       "accent": "#00a3d6",
       "btn": "#007ea6",
+      "top": "#00a3d6",
+      "btn_dark": "#00a3d6",
+      "ink_dark": "#0b1a20",
+      "accent2": "#f7cf46",
+      "group": "Standard"
+    },
+    "valley-baptist-gray": {
+      "label": "Valley Baptist Gray",
+      "accent": "#00a3d6",
+      "btn": "#007ea6",
       "top": "#414042",
       "btn_dark": "#00a3d6",
       "ink_dark": "#0b1a20",
