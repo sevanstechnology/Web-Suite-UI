@@ -5,7 +5,7 @@
 
 :root {
   /* palette defaults = Valley Baptist (overridden by the inline --p-* variables) */
-  --p-accent: #00a3d6; --p-btn: #007ea6; --p-btn-hover: #006f92; --p-top: #414042;
+  --p-accent: #00a3d6; --p-btn: #007ea6; --p-btn-hover: #006f92; --p-top: #00a3d6;
   --p-btn-dark: #00a3d6; --p-ink-dark: #0b1a20; --p-btn-dark-hover: #1aaedb; --p-accent2: #f7cf46;
   --font: "Segoe UI Variable Text", "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", sans-serif;
   --mono: "Cascadia Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;

@@ -31,3 +31,9 @@ current page's `.nav-sec`.
 
 Make the change here first (generic only), update `CHANGELOG.md`, run `pytest`, push; then sync into each app
 (EntraNAC and Facility Hub), check the pages, commit and push those repositories too.
+
+## Colours picker
+
+Put `<div class="palette-picker" data-palette-picker role="group" aria-label="Colours"></div>` (and, if you like, the
+Auto / Light / Dark `.theme-switch`) in a menu. If you add it after the page loads, call `SuiteUI.refresh()`.
+`<html data-suite-palettes="none">` turns it off; see docs/design.md.

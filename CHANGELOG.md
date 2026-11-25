@@ -1,6 +1,11 @@
 # Changelog
 
 ## Unreleased
+- Fix: `SuiteUI.refresh()` now also draws a `[data-palette-picker]` added after page load, so apps that build their
+  menus in the browser (Church Help, Facility Hub) can show the Colours picker.
+- The default Valley Baptist look now has a **VBC blue top bar** (#00a3d6). The previous gray top bar is the new
+  **Valley Baptist Gray** palette (`valley-baptist-gray`). Note: white text on #00a3d6 is about 2.9:1, below the 4.5:1
+  the other top bars meet; pick Valley Baptist Gray where that matters.
 - New: users pick their own colours. The user menu (admin shell and portal) has a **Colours** picker with every palette
   and a **Custom** option (main colour + top bar, adjusted automatically to keep 4.5:1 contrast). The choice is saved in
   the browser and, with `cookie_domain`, follows the user across apps; **Default** goes back to the app's colours.

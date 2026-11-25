@@ -35,7 +35,9 @@ def test_registry_icons_exist():
 def test_palettes_are_accessible():
     for key, p in palettes.PALETTES.items():
         assert contrast(p["btn"], "#ffffff") >= 4.5, key
-        assert contrast(p["top"], "#ffffff") >= 4.5, key
+        # The Valley Baptist top bar is the exact brand blue (#00a3d6, about 2.9:1 with white), chosen on purpose;
+        # "valley-baptist-gray" keeps the darker top bar. Every other top bar must reach 4.5:1.
+        assert contrast(p["top"], "#ffffff") >= (2.9 if key == "valley-baptist" else 4.5), key
         assert contrast(p["btn_dark"], p["ink_dark"]) >= 4.5, key          # dark-mode buttons
         assert contrast(p["btn_dark"], "#1b1a19") >= 4.5, key             # dark-mode links on the page
         # counters / avatar text. Violet's original magenta (3.6:1) predates this check; new palettes must reach 4.5:1
@@ -99,6 +101,7 @@ def test_icons_for_facility_apps_exist():
 def test_js_exposes_refresh_for_single_page_apps():
     js = (STATIC_DIR / "suite/suite.js").read_text()
     assert "SuiteUI.refresh" in js and "function collectPages()" in js
+    assert "initPickers(); }" in js       # refresh() also draws colour pickers added after page load
 
 
 # ---------------------------------------------------------------- colour customization (admin default + user's own)
@@ -166,3 +169,9 @@ def test_js_palettes_match_python():
     assert out["p"] == data["palettes"], "suite.js PALETTES must match palettes.json"
     for h, c in zip(colours, out["c"]):
         assert c == palettes.custom_palette(h), h
+
+
+def test_valley_baptist_blue_top_bar_with_gray_option():
+    assert palettes.PALETTES["valley-baptist"]["top"] == "#00a3d6"
+    assert palettes.PALETTES["valley-baptist-gray"]["top"] == "#414042"
+    assert "--p-top:#00a3d6" in palettes.ui()["style"]

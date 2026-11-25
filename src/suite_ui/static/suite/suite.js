@@ -54,7 +54,8 @@
   // says what users may pick here; the server-rendered style="--p-…" is the admin's default and comes back on "Default".
   // PALETTES must match palettes.json (a test checks); the maths matches palettes.py.
   var PKEY = "suite-palette", PALETTES = {
-    "valley-baptist": {"label":"Valley Baptist","accent":"#00a3d6","btn":"#007ea6","top":"#414042","btn_dark":"#00a3d6","ink_dark":"#0b1a20","accent2":"#f7cf46","group":"Standard"},
+    "valley-baptist": {"label":"Valley Baptist","accent":"#00a3d6","btn":"#007ea6","top":"#00a3d6","btn_dark":"#00a3d6","ink_dark":"#0b1a20","accent2":"#f7cf46","group":"Standard"},
+    "valley-baptist-gray": {"label":"Valley Baptist Gray","accent":"#00a3d6","btn":"#007ea6","top":"#414042","btn_dark":"#00a3d6","ink_dark":"#0b1a20","accent2":"#f7cf46","group":"Standard"},
     "cobalt": {"label":"Cobalt","accent":"#0f6cbd","btn":"#0f6cbd","top":"#0f548c","btn_dark":"#479ef5","ink_dark":"#0a1a2e","accent2":"#ffb900","group":"Standard"},
     "teal": {"label":"Teal","accent":"#038387","btn":"#037075","top":"#024f52","btn_dark":"#3ab3b7","ink_dark":"#06201f","accent2":"#ffaa44","group":"Standard"},
     "violet": {"label":"Violet","accent":"#7160e8","btn":"#5b4bd4","top":"#3b2e8c","btn_dark":"#9d8ff5","ink_dark":"#170f40","accent2":"#e3008c","group":"Standard"},
@@ -232,8 +233,12 @@
 
   document.addEventListener("DOMContentLoaded", function () {
     apply(pref());
-    var pickers = document.querySelectorAll("[data-palette-picker]");
-    for (var pi = 0; pi < pickers.length; pi++) renderPicker(pickers[pi]);
+    function initPickers() {          // also run by SuiteUI.refresh(), for menus an app draws after load
+      var pickers = document.querySelectorAll("[data-palette-picker]");
+      for (var pi = 0; pi < pickers.length; pi++) if (!pickers[pi]._suitePP) { pickers[pi]._suitePP = true; renderPicker(pickers[pi]); }
+      syncPicker();
+    }
+    initPickers();
     applyPalette(palettePref());
     loadRegistry();
 
@@ -288,7 +293,7 @@
       }
     }
     if (navigator.share) { var ns = document.querySelectorAll(".share-native"); for (var n = 0; n < ns.length; n++) ns[n].hidden = false; }
-    function refresh() { decorate(); initRemember(); initSections(); }
+    function refresh() { decorate(); initRemember(); initSections(); initPickers(); }
     refresh();
     if (window.SuiteUI) window.SuiteUI.refresh = refresh;   // for apps that render their menu / pages in the browser
 
