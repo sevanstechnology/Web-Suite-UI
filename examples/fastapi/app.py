@@ -7,7 +7,8 @@ from fastapi import FastAPI, Request
 from fastapi.templating import Jinja2Templates
 from pathlib import Path
 
-from suite_ui import Suite
+from fastapi.responses import RedirectResponse
+from suite_ui import Suite, palettes
 
 app = FastAPI(title="Suite-UI demo")
 templates = Jinja2Templates(directory=Path(__file__).with_name("templates"))
@@ -22,8 +23,8 @@ COMMON = dict(user=USER, signout_url="/signout", pill={"text": "demo · primary"
 
 
 def ctx(request: Request, **kw):
-    palette = request.query_params.get("palette", "valley-baptist")
-    return {"request": request, "ui": suite.ui(palette), **COMMON, **kw}
+    palette = request.query_params.get("palette")           # ?palette=teal previews one palette; otherwise the admin's choice
+    return {"request": request, "ui": suite.ui(palette) if palette else suite.ui(), **COMMON, **kw}
 
 
 @app.get("/")
@@ -45,3 +46,18 @@ def portal(request: Request):
 @app.get("/login")
 def login(request: Request):
     return templates.TemplateResponse(request, "login.html", ctx(request, sso_url="/auth"))
+
+
+@app.get("/branding")
+def branding(request: Request):
+    return templates.TemplateResponse(request, "branding.html", ctx(request))
+
+
+@app.post("/branding")
+async def save_branding(request: Request):
+    """An admin sets the app's default colours. A real app stores palettes.encode(...) in its settings and calls
+    suite.set_palette(*palettes.decode(stored)) at start-up."""
+    form = await request.form()
+    suite.set_palette(*palettes.from_form(form))
+    suite.user_palettes = form.get("user_palettes") == "on"
+    return RedirectResponse("/branding?saved=1", status_code=303)

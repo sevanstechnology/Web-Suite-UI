@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% import "suite/_macros.html" as sm with context %}
+{% block title %}Branding & colours{% endblock %}
+{% block content %}
+{{ sm.page_header("Branding & colours", "The colours everyone sees in this app. Each user can still pick their own in the account menu, unless you turn that off.") }}
+{% if request.query_params.get("saved") %}<div class="flash ok">Colours saved.</div>{% endif %}
+<form method="post" class="panel">
+  <h2>Default colours</h2>
+  {{ sm.palette_form(suite.ui()) }}
+  <div class="fields" style="margin-top:14px">
+    <label class="check"><input type="checkbox" name="user_palettes"{% if suite.user_palettes %} checked{% endif %}> Let users pick their own colours</label>
+  </div>
+  <div class="actions" style="margin-top:14px"><button class="btn primary" type="submit">Save</button></div>
+</form>
+{% endblock %}

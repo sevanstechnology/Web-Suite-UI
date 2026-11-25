@@ -2,9 +2,33 @@
 
 ## Palettes
 
-`<html data-palette="…" style="--p-…">` is produced by `suite.ui(key)` (or `suite.ui("custom", accent="#hex")`).
-Palette ids: `valley-baptist` (default), `cobalt`, `teal`, `violet`, `forest`, `crimson`, `graphite`. They live in
-`static/suite/palettes.json`, which other languages can read too.
+`<html data-palette="…" style="--p-…">` is produced by `suite.ui()` - the app's default colours, set with
+`Suite(palette=…)` or `suite.set_palette(key, accent, top)` - or by `suite.ui(key)` / `suite.ui("custom", accent="#hex")`.
+Palette ids live in `static/suite/palettes.json` (which other languages can read too), each with a `group`:
+
+- **Standard:** `valley-baptist` (default), `cobalt`, `teal`, `violet`, `forest`, `crimson`, `graphite`
+- **Fun:** `summer-popsicle`, `pasture-of-dreams`, `berry-blues`, `icy-gradient`, `deep-blue`
+- **Holidays:** `christmas`, `halloween`, `thanksgiving`, `valentines`, `st-patricks`, `fourth-of-july`
+
+Every palette is checked by the tests: buttons and the top bar reach 4.5:1 with white text, dark-mode buttons 4.5:1
+with their text and the page, highlights 4.5:1 with dark text. When you add one, derive `btn`, `top`, `btn_dark`,
+`ink_dark` and `accent2` from your colours with the same rules as `palettes.custom_palette()`, and copy it into the
+`PALETTES` list in `suite.js` too (a test checks they match).
+
+### Who picks the colours
+
+- **Admin (app default):** put `{{ sm.palette_form(suite.ui()) }}` in a `<form method="post">` on your own settings
+  page, read it with `palettes.from_form(form)`, store `palettes.encode(key, accent, top)` (one string) and call
+  `suite.set_palette(*palettes.decode(stored))` at start-up and after saving. See `examples/fastapi` (`/branding`).
+- **Each user:** the user menu (shell and portal) has a **Colours** picker: Default (the admin's colours), every
+  allowed palette and **Custom** (main colour + top bar, made readable automatically). suite.js saves it as
+  `suite-palette` in the browser and, with `cookie_domain`, in a cookie shared by every app. It is laid over the
+  admin's colours; Default removes it.
+- **Lock it:** `Suite(user_palettes=False)` turns the picker off (everyone sees the admin's colours),
+  `user_palettes=["cobalt", "teal", "custom"]` limits it. A template can pass `user_palettes` to override per page or
+  per user. This becomes `<html data-suite-palettes="all|none|a,b,custom">`, which static / Node apps set themselves.
+- From your own scripts: `SuiteUI.setPalette("halloween")`, `SuiteUI.setPalette("custom:#00a3d6")`,
+  `SuiteUI.setPalette("")` (back to the default).
 
 | Variable | Used for |
 |---|---|
@@ -28,10 +52,10 @@ Everything else (`--bg`, `--panel`, `--ink`, `--muted`, `--line`, `--ok`, `--bad
 
 `.panel` (`.flush`, `.attention`), `.grid .g2/.g3/.g4`, `.stat`, tables, `.badge .ok/.bad/.warn/.info`,
 `.btn .primary/.danger/.sm`, `.fields` forms, `.flash .ok/.warn/.error`, `.banner`, `.tabs`, `details.box`, `.kv`,
-`.hint-box`, `.page-help`, `.checklist`, `.wiz-steps`, `pre.snippet`, `pre.diff`, `.share`, `.app-cards`.
+`.hint-box`, `.page-help`, `.palettes` (admin palette form), `.palette-picker`, `.checklist`, `.wiz-steps`, `pre.snippet`, `pre.diff`, `.share`, `.app-cards`.
 
 Macros in `suite/_macros.html`: `icon`, `page_header` (with a `call` block for buttons), `stat`, `badge`, `yesno`,
-`ts`, `empty`, `apps_grid`, `share`, `theme_switch`, `initials`.
+`ts`, `empty`, `apps_grid`, `share`, `theme_switch`, `palette_picker`, `palette_form`, `initials`.
 
 ## Icons
 
