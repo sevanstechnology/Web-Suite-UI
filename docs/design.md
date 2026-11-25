@@ -10,8 +10,8 @@ Palette ids live in `static/suite/palettes.json` (which other languages can read
 - **Fun:** `summer-popsicle`, `pasture-of-dreams`, `berry-blues`, `icy-gradient`, `deep-blue`
 - **Holidays:** `christmas`, `halloween`, `thanksgiving`, `valentines`, `st-patricks`, `fourth-of-july`
 
-Every palette is checked by the tests: buttons and the top bar reach 4.5:1 with white text (except the brand-blue
-Valley Baptist top bar, about 2.9:1, kept on purpose), dark-mode buttons 4.5:1
+Every palette is checked by the tests: buttons and the top bar reach 4.5:1 with white text (except Valley Baptist,
+which uses valleybaptist.org's exact #00a4d6 for the top bar and buttons, about 2.9:1, on purpose), dark-mode buttons 4.5:1
 with their text and the page, highlights 4.5:1 with dark text. When you add one, derive `btn`, `top`, `btn_dark`,
 `ink_dark` and `accent2` from your colours with the same rules as `palettes.custom_palette()`, and copy it into the
 `PALETTES` list in `suite.js` too (a test checks they match).
