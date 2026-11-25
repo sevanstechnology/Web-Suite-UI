@@ -101,6 +101,7 @@ def test_icons_for_facility_apps_exist():
 def test_js_exposes_refresh_for_single_page_apps():
     js = (STATIC_DIR / "suite/suite.js").read_text()
     assert "SuiteUI.refresh" in js and "function collectPages()" in js
+    assert "initPickers(); }" in js       # refresh() also draws colour pickers added after page load
 
 
 # ---------------------------------------------------------------- colour customization (admin default + user's own)

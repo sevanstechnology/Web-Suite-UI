@@ -233,8 +233,12 @@
 
   document.addEventListener("DOMContentLoaded", function () {
     apply(pref());
-    var pickers = document.querySelectorAll("[data-palette-picker]");
-    for (var pi = 0; pi < pickers.length; pi++) renderPicker(pickers[pi]);
+    function initPickers() {          // also run by SuiteUI.refresh(), for menus an app draws after load
+      var pickers = document.querySelectorAll("[data-palette-picker]");
+      for (var pi = 0; pi < pickers.length; pi++) if (!pickers[pi]._suitePP) { pickers[pi]._suitePP = true; renderPicker(pickers[pi]); }
+      syncPicker();
+    }
+    initPickers();
     applyPalette(palettePref());
     loadRegistry();
 
@@ -289,7 +293,7 @@
       }
     }
     if (navigator.share) { var ns = document.querySelectorAll(".share-native"); for (var n = 0; n < ns.length; n++) ns[n].hidden = false; }
-    function refresh() { decorate(); initRemember(); initSections(); }
+    function refresh() { decorate(); initRemember(); initSections(); initPickers(); }
     refresh();
     if (window.SuiteUI) window.SuiteUI.refresh = refresh;   // for apps that render their menu / pages in the browser
 
