@@ -7,10 +7,12 @@
     Context (all optional): path, user (str or {"name", "email"}), nav, counts {href: n}, ui (suite.ui(...)),
     flashes [(kind, msg)], pill {"text", "kind"}, notifications [{"label", "items": [{"href","label","icon","count"}]}],
     help_links [{"href","label","icon"}], user_links [{"href","label","icon"}], signout_url, nav_foot (html), page_help
-    {"key","text","url"}, banner (html), audience ("admin" default).
+    {"key","text","url"}, banner (html), audience ("admin" default), user_palettes (True / False / list: overrides
+    Suite(user_palettes=...) for this page, e.g. False to lock one user's or one page's colours).
 -#}
 {% import "suite/_macros.html" as sm with context %}
 {% set ui = ui if ui is defined and ui else suite.ui() %}
+{% set pchoices = suite.palette_choices(user_palettes if user_palettes is defined else none) %}
 {% set path = path if path is defined and path else (request.url.path if request is defined and request else "/") %}
 {% set nav = nav if nav is defined and nav else [] %}
 {% set counts = counts if counts is defined and counts else {} %}
@@ -23,7 +25,7 @@
 {% set uname = (user.name if user is mapping else user) if user is defined and user else "" %}
 {% set umail = (user.email if user is mapping else "") if user is defined and user else "" %}
 <!doctype html>
-<html lang="{% block lang %}en{% endblock %}" data-palette="{{ ui.palette }}" style="{{ ui.style }}" data-suite-app="{{ suite.app_id }}"
+<html lang="{% block lang %}en{% endblock %}" data-palette="{{ ui.palette }}" style="{{ ui.style }}" data-suite-palettes="{{ pchoices }}" data-suite-app="{{ suite.app_id }}"
       data-suite-static="{{ suite.static }}" data-suite-audience="{{ audience if audience is defined and audience else 'admin' }}"
       {% if suite.cookie_domain %}data-suite-cookie-domain="{{ suite.cookie_domain }}"{% endif %}
       {% if suite.help_search %}data-suite-help-search="{{ suite.help_search }}"{% endif %}>
@@ -81,6 +83,7 @@
         <div class="head"><strong>{{ uname }}</strong><span class="small muted">{{ umail or suite.org_name }}</span></div>
         <div class="sec">Appearance</div>
         <div class="item">{{ sm.theme_switch() }}</div>
+        {% if pchoices != "none" %}{{ sm.palette_picker() }}{% endif %}
         {% block user_menu %}{% endblock %}
         {% if user_links is defined and user_links %}{% for l in user_links %}<a href="{{ l.href }}">{{ sm.icon(l.icon or 'user', 'sm') }} {{ l.label }}</a>{% endfor %}{% endif %}
         {% if signout_url is defined and signout_url %}<a href="{{ signout_url }}">{{ sm.icon("signout", "sm") }} Sign out</a>{% endif %}

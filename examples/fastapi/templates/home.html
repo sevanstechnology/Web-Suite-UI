@@ -22,7 +22,9 @@
     <p class="sub" style="margin-bottom:12px">Every app shares the same palettes. Try one:</p>
     <div class="actions">
       {% for k in ["valley-baptist", "cobalt", "teal", "violet", "forest", "crimson", "graphite"] %}<a class="btn sm" href="?palette={{ k }}">{{ k|replace("-", " ")|title }}</a>{% endfor %}</div>
-    <div class="hint-box" style="margin-top:14px">Light / dark follows the user across every app in the suite when <code>cookie_domain</code> is set.</div>
+    <div class="hint-box" style="margin-top:14px">Admins set this app's colours on <a href="/branding">Branding &amp; colours</a>. Each user can pick
+      their own (or a custom colour) under <strong>Colours</strong> in the account menu. Light / dark and colours follow the user
+      across every app in the suite when <code>cookie_domain</code> is set.</div>
   </div>
 </div>
 {% endblock %}

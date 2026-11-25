@@ -9,7 +9,10 @@
  *   data-suite-help-search="/help?q="    adds "Search the help for …" to the top-bar search
  *   data-suite-audience="admin|user"     hide registry apps whose "audience" doesn't include this
  *
+ *   data-suite-palettes="all"            colours users may pick for themselves: "all", "none" or e.g. "cobalt,teal,custom"
+ *
  * Theme: "auto" (follow the operating system), "light" or "dark".
+ * Colours: the page's style="--p-…" is the app default; a user's own pick ("suite-palette") is laid over it.
  * Admin layout: collapsible menu (remembered), drawer on small screens, top-bar menus, page + app search, app launcher.
  */
 (function () {
@@ -45,6 +48,119 @@
   apply(pref());
   if (get(NAVKEY, "0") === "1") root.classList.add("nav-min");
   if (mq && mq.addEventListener) mq.addEventListener("change", function () { if (pref() === "auto") apply("auto"); });
+
+  // ---------------------------------------------------------------- colours: the user's own palette over the app's default
+  // Stored like the theme ("suite-palette": "cobalt" or "custom:#00a3d6:#414042"). <html data-suite-palettes="all|none|a,b,custom">
+  // says what users may pick here; the server-rendered style="--p-…" is the admin's default and comes back on "Default".
+  // PALETTES must match palettes.json (a test checks); the maths matches palettes.py.
+  var PKEY = "suite-palette", PALETTES = {
+    "valley-baptist": {"label":"Valley Baptist","accent":"#00a3d6","btn":"#007ea6","top":"#414042","btn_dark":"#00a3d6","ink_dark":"#0b1a20","accent2":"#f7cf46","group":"Standard"},
+    "cobalt": {"label":"Cobalt","accent":"#0f6cbd","btn":"#0f6cbd","top":"#0f548c","btn_dark":"#479ef5","ink_dark":"#0a1a2e","accent2":"#ffb900","group":"Standard"},
+    "teal": {"label":"Teal","accent":"#038387","btn":"#037075","top":"#024f52","btn_dark":"#3ab3b7","ink_dark":"#06201f","accent2":"#ffaa44","group":"Standard"},
+    "violet": {"label":"Violet","accent":"#7160e8","btn":"#5b4bd4","top":"#3b2e8c","btn_dark":"#9d8ff5","ink_dark":"#170f40","accent2":"#e3008c","group":"Standard"},
+    "forest": {"label":"Forest","accent":"#107c10","btn":"#0e700e","top":"#0b4f0b","btn_dark":"#54b054","ink_dark":"#062006","accent2":"#ffc83d","group":"Standard"},
+    "crimson": {"label":"Crimson","accent":"#c50f1f","btn":"#b10e1c","top":"#750b14","btn_dark":"#f1707b","ink_dark":"#2b0307","accent2":"#ffb900","group":"Standard"},
+    "graphite": {"label":"Graphite","accent":"#4a5866","btn":"#44505c","top":"#242b33","btn_dark":"#a3b2c2","ink_dark":"#11161b","accent2":"#2899f5","group":"Standard"},
+    "summer-popsicle": {"label":"Summer Popsicle","accent":"#598d39","btn":"#507f33","top":"#2d372b","btn_dark":"#619343","ink_dark":"#0f160a","accent2":"#fd9ef8","group":"Fun"},
+    "pasture-of-dreams": {"label":"Pasture of Dreams","accent":"#c197d2","btn":"#876a93","top":"#382a40","btn_dark":"#c197d2","ink_dark":"#1d1720","accent2":"#fbc5ff","group":"Fun"},
+    "berry-blues": {"label":"Berry Blues","accent":"#ff2768","btn":"#d92158","top":"#4e1a3d","btn_dark":"#ff2768","ink_dark":"#260610","accent2":"#05e0e9","group":"Fun"},
+    "icy-gradient": {"label":"Icy Gradient","accent":"#3cacae","btn":"#2d8182","top":"#776391","btn_dark":"#3cacae","ink_dark":"#091a1a","accent2":"#eeb5eb","group":"Fun"},
+    "deep-blue": {"label":"The Deep Blue","accent":"#233dff","btn":"#233dff","top":"#050a30","btn_dark":"#6577ff","ink_dark":"#0f1226","accent2":"#a7b1ff","group":"Fun"},
+    "christmas": {"label":"Christmas","accent":"#c8102e","btn":"#c8102e","top":"#0b3d2e","btn_dark":"#d8586d","ink_dark":"#200d10","accent2":"#f2c14e","group":"Holidays"},
+    "halloween": {"label":"Halloween","accent":"#ff7518","btn":"#bf5812","top":"#1f1a24","btn_dark":"#ff7518","ink_dark":"#261204","accent2":"#9bde3a","group":"Holidays"},
+    "thanksgiving": {"label":"Thanksgiving","accent":"#c8601d","btn":"#b4561a","top":"#4a2c1a","btn_dark":"#cb6828","ink_dark":"#1e1006","accent2":"#e8b04b","group":"Holidays"},
+    "valentines": {"label":"Valentine's","accent":"#e0245e","btn":"#e0245e","top":"#6d0f2c","btn_dark":"#e54576","ink_dark":"#220a12","accent2":"#ffb3c7","group":"Holidays"},
+    "st-patricks": {"label":"St. Patrick's","accent":"#1a9e4b","btn":"#168640","top":"#0b4f2c","btn_dark":"#1a9e4b","ink_dark":"#04180b","accent2":"#f5c542","group":"Holidays"},
+    "fourth-of-july": {"label":"Fourth of July","accent":"#b22234","btn":"#b22234","top":"#0a2a66","btn_dark":"#c96471","ink_dark":"#1e0f11","accent2":"#a7c7ff","group":"Holidays"}
+  };
+  var BASE_STYLE = root.getAttribute("style") || "", BASE_PALETTE = attr("data-palette", "");
+  function allowed() {
+    var a = attr("data-suite-palettes", "all");
+    if (a === "none") return [];
+    var all = Object.keys(PALETTES).concat(["custom"]);
+    return a === "all" ? all : a.split(",").filter(function (k) { return all.indexOf(k) >= 0; });
+  }
+  function rnd(x) { var f = Math.floor(x), d = x - f; return d > 0.5 ? f + 1 : d < 0.5 ? f : (f % 2 ? f + 1 : f); }  // like Python's round()
+  function rgb(h) { return [1, 3, 5].map(function (i) { return parseInt(h.substr(i, 2), 16) / 255; }); }
+  function hex(c) { return "#" + c.map(function (v) { var n = Math.max(0, Math.min(255, rnd(v * 255))); return (n < 16 ? "0" : "") + n.toString(16); }).join(""); }
+  function lum(h) { var c = rgb(h).map(function (v) { return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }); return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]; }
+  function contrast(a, b) { var x = lum(a), y = lum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); }
+  function mix(h, o, t) { var a = rgb(h), b = rgb(o); return hex(a.map(function (v, i) { return v + (b[i] - v) * t; })); }
+  function until(h, toward, against, need) { for (var i = 0; i <= 20; i++) { var c = mix(h, toward, i * 0.05); if (contrast(c, against) >= need) return c; } return toward; }
+  function isHex(v) { return /^#[0-9a-f]{6}$/i.test(v || ""); }
+  function customPalette(accent, top) {
+    accent = accent.toLowerCase();
+    var btnDark = until(accent, "#ffffff", "#1b1a19", 4.5);
+    return { label: "Custom", accent: accent, btn: until(accent, "#000000", "#ffffff", 4.5),
+             top: until(isHex(top) ? top.toLowerCase() : mix(accent, "#000000", 0.35), "#000000", "#ffffff", 4.5),
+             btn_dark: btnDark, ink_dark: contrast(btnDark, "#ffffff") >= contrast(btnDark, "#000000") ? "#ffffff" : mix(btnDark, "#000000", 0.85),
+             accent2: mix(accent, "#ffffff", 0.45) };
+  }
+  function parsePalette(v) {          // "custom:#aabbcc:#112233" -> {key, accent, top, colors}, or null if not allowed / unreadable
+    var p = String(v || "").split(":"), ok = allowed();
+    if (p[0] === "custom" && isHex(p[1]) && ok.indexOf("custom") >= 0) return { key: "custom", accent: p[1].toLowerCase(), top: isHex(p[2]) ? p[2].toLowerCase() : "", colors: customPalette(p[1], p[2]) };
+    if (PALETTES[p[0]] && ok.indexOf(p[0]) >= 0) return { key: p[0], colors: PALETTES[p[0]] };
+    return null;
+  }
+  function palettePref() { return cookie(PKEY) || get(PKEY, ""); }
+  function savePalette(v) {
+    put(PKEY, v);
+    if (COOKIE_DOMAIN) document.cookie = PKEY + "=" + encodeURIComponent(v) + "; domain=" + COOKIE_DOMAIN + "; path=/; max-age=" + (v ? 31536000 : 0) + "; SameSite=Lax" + (location.protocol === "https:" ? "; Secure" : "");
+  }
+  function applyPalette(v) {
+    var p = parsePalette(v);
+    root.setAttribute("style", BASE_STYLE);
+    root.setAttribute("data-palette", p ? p.key : BASE_PALETTE);
+    root.setAttribute("data-palette-pref", p ? v : "");
+    if (p) {
+      var c = p.colors, vars = { accent: c.accent, btn: c.btn, "btn-hover": mix(c.btn, "#000000", 0.12), top: c.top, "btn-dark": c.btn_dark,
+                                 "ink-dark": c.ink_dark, "btn-dark-hover": mix(c.btn_dark, "#ffffff", 0.12), accent2: c.accent2 };
+      for (var k in vars) root.style.setProperty("--p-" + k, vars[k]);
+    }
+    syncPicker();
+  }
+  function syncPicker() {
+    var cur = root.getAttribute("data-palette-pref") || "", key = cur.split(":")[0];
+    var bs = document.querySelectorAll("[data-palette-set]");
+    for (var i = 0; i < bs.length; i++) bs[i].setAttribute("aria-pressed", bs[i].getAttribute("data-palette-set") === (key || "") ? "true" : "false");
+    var p = parsePalette(cur), name = p ? (p.key === "custom" ? "Custom" : p.colors.label) : "Default";
+    var ns = document.querySelectorAll(".palette-picker .pp-name");
+    for (var n = 0; n < ns.length; n++) ns[n].textContent = name;
+    var cs = document.querySelectorAll(".palette-picker .pp-custom");
+    for (var j = 0; j < cs.length; j++) cs[j].hidden = key !== "custom";
+  }
+  function renderPicker(box) {
+    var ok = allowed();
+    if (!ok.length) { box.hidden = true; return; }
+    var cur = parsePalette(palettePref()), html = ['<div class="pp-label">Colours <span class="pp-name muted"></span></div><div class="pp-swatches">'];
+    var bt = (BASE_STYLE.match(/--p-top:\s*(#[0-9a-f]{6})/i) || [])[1], ba = (BASE_STYLE.match(/--p-accent:\s*(#[0-9a-f]{6})/i) || [])[1];
+    html.push('<button type="button" class="pp-sw pp-default" data-palette-set="" title="Default (this app\'s colours)" aria-label="Default colours"><span' +
+              (bt && ba ? ' style="background:linear-gradient(135deg,' + bt + " 0 50%," + ba + ' 50% 100%)">' : ">" + icon("history", "sm")) + "</span></button>");
+    var own = null;
+    if (ok.indexOf("custom") >= 0) {
+      var ca = cur && cur.key === "custom" ? cur.accent : (PALETTES[root.getAttribute("data-palette")] || PALETTES[Object.keys(PALETTES)[0]]).accent;
+      own = { a: ca, t: cur && cur.key === "custom" && cur.top ? cur.top : mix(ca, "#000000", 0.35) };
+      html.push('<button type="button" class="pp-sw pp-own" data-palette-set="custom" title="Custom colours" aria-label="Custom colours"><span>' + icon("palette", "sm") + "</span></button>");
+    }
+    var lastGroup = "";
+    ok.forEach(function (k) {
+      if (k === "custom") return;
+      var c = PALETTES[k];
+      if (c.group && c.group !== lastGroup && lastGroup) html.push('</div><div class="pp-group">' + esc(c.group) + '</div><div class="pp-swatches">');
+      lastGroup = c.group || lastGroup || "-";
+      html.push('<button type="button" class="pp-sw" data-palette-set="' + esc(k) + '" title="' + esc(c.label) + '" aria-label="' + esc(c.label) +
+                '"><span style="background:linear-gradient(135deg,' + esc(c.top) + " 0 50%," + esc(c.accent) + ' 50% 100%)"></span></button>');
+    });
+    html.push("</div>");
+    if (own) html.push('<div class="pp-custom" hidden><label>Main <input type="color" data-pp="accent" value="' + esc(own.a) + '"></label>' +
+                       '<label>Top bar <input type="color" data-pp="top" value="' + esc(own.t) + '"></label></div>');
+    box.innerHTML = html.join("");
+  }
+  function customValue(box) {
+    var a = box.querySelector('[data-pp="accent"]'), t = box.querySelector('[data-pp="top"]');
+    return "custom:" + a.value + (t && t.value ? ":" + t.value : "");
+  }
+  applyPalette(palettePref());
 
   // ---------------------------------------------------------------- suite registry (the apps in the launcher)
   var registry = null, waiting = [];
@@ -116,6 +232,9 @@
 
   document.addEventListener("DOMContentLoaded", function () {
     apply(pref());
+    var pickers = document.querySelectorAll("[data-palette-picker]");
+    for (var pi = 0; pi < pickers.length; pi++) renderPicker(pickers[pi]);
+    applyPalette(palettePref());
     loadRegistry();
 
     // app launcher panel
@@ -178,6 +297,12 @@
       if (!t) return;
       var b = t.closest(".theme-switch button");
       if (b) { var p = b.getAttribute("data-theme-set"); savePref(p); apply(p); return; }
+      var pb = t.closest("[data-palette-set]");
+      if (pb) {
+        var pv = pb.getAttribute("data-palette-set"), pbox = pb.closest(".palette-picker");
+        if (pv === "custom" && pbox) pv = customValue(pbox);
+        savePalette(pv); applyPalette(pv); return;
+      }
       if (wbtn && t.closest("[data-launcher]")) {
         var open = !panel.classList.contains("open");
         closeMenus(); panel.classList.toggle("open", open); wbtn.setAttribute("aria-expanded", open ? "true" : "false");
@@ -233,6 +358,13 @@
       if (!t.closest(".menu") && !t.closest(".tb-search") && !t.closest(".suite-launcher")) closeMenus();
       if (root.classList.contains("nav-open") && !t.closest(".nav")) root.classList.remove("nav-open");
     });
+    function onCustom(e, save) {
+      var box = e.target.closest && e.target.closest(".palette-picker");
+      if (!box || !e.target.getAttribute("data-pp")) return;
+      var v = customValue(box); applyPalette(v); if (save) savePalette(v);
+    }
+    document.addEventListener("input", function (e) { onCustom(e, false); });   // live preview while dragging
+    document.addEventListener("change", function (e) { onCustom(e, true); });
     document.addEventListener("keydown", function (e) {
       if (e.key === "Escape") { var wasOpen = panel && panel.classList.contains("open"); closeMenus(); root.classList.remove("nav-open"); if (wasOpen) wbtn.focus(); }
       if (e.key === "/" && !/INPUT|TEXTAREA|SELECT/.test((document.activeElement || {}).tagName || "")) {
@@ -280,5 +412,8 @@
     });
   });
 
-  window.SuiteUI = { apply: apply, refresh: function () {}, setTheme: function (p) { savePref(p); apply(p); }, registry: withRegistry };
+  window.SuiteUI = { apply: apply, refresh: function () {}, setTheme: function (p) { savePref(p); apply(p); }, registry: withRegistry,
+                     // the user's colours: setPalette("cobalt"), setPalette("custom:#00a3d6"), setPalette("") = the app's default
+                     setPalette: function (v) { savePalette(v || ""); applyPalette(v || ""); }, palette: palettePref,
+                     palettes: PALETTES, customPalette: customPalette, contrast: contrast };
 })();

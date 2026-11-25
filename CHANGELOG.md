@@ -1,6 +1,18 @@
 # Changelog
 
 ## Unreleased
+- New: users pick their own colours. The user menu (admin shell and portal) has a **Colours** picker with every palette
+  and a **Custom** option (main colour + top bar, adjusted automatically to keep 4.5:1 contrast). The choice is saved in
+  the browser and, with `cookie_domain`, follows the user across apps; **Default** goes back to the app's colours.
+  `SuiteUI.setPalette()` for scripts.
+- New: admins set the app's default colours with `Suite(palette=, accent=, top=)` / `suite.set_palette()`, using the new
+  `sm.palette_form()` macro and `palettes.from_form()` / `encode()` / `decode()` helpers. `suite.ui()` with no
+  arguments now returns the app's default. `Suite(user_palettes=True|False|[...])` (or a `user_palettes` template
+  variable) turns the users' picker off or limits it.
+- New palettes, grouped in palettes.json: **Fun** (Summer Popsicle, Pasture of Dreams, Berry Blues, Icy Gradient, The Deep
+  Blue) and **Holidays** (Christmas, Halloween, Thanksgiving, Valentine's, St. Patrick's, Fourth of July). Tests now
+  also check dark-mode and highlight contrast for every palette.
+- Demo: `/branding` admin page in `examples/fastapi`; the static example shows the picker.
 - Church Help (plain HTML site, Azure Static Web Apps) now runs on the static files; new registry tile `church-help`.
 - Fix: text boxes with no `type` attribute, and `tel` / `date` / `time` boxes, get the same style as `text` boxes.
 - New icons: `door`, `sync`, `ticket` (original artwork).

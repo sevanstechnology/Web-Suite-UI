@@ -3,10 +3,11 @@
 -#}
 {% import "suite/_macros.html" as sm with context %}
 {% set ui = ui if ui is defined and ui else suite.ui() %}
+{% set pchoices = suite.palette_choices(user_palettes if user_palettes is defined else none) %}
 {% set uname = (user.name if user is mapping else user) if user is defined and user else "" %}
 {% set umail = (user.email if user is mapping else "") if user is defined and user else "" %}
 <!doctype html>
-<html lang="{% block lang %}en{% endblock %}" data-palette="{{ ui.palette }}" style="{{ ui.style }}" data-suite-app="{{ suite.app_id }}"
+<html lang="{% block lang %}en{% endblock %}" data-palette="{{ ui.palette }}" style="{{ ui.style }}" data-suite-palettes="{{ pchoices }}" data-suite-app="{{ suite.app_id }}"
       data-suite-static="{{ suite.static }}" data-suite-audience="{{ audience if audience is defined and audience else 'user' }}"
       {% if suite.cookie_domain %}data-suite-cookie-domain="{{ suite.cookie_domain }}"{% endif %}>
 <head>
@@ -32,6 +33,9 @@
         <button class="tb-btn" type="button" data-menu="m-portal" title="{{ uname }}"><span class="avatar">{{ sm.initials(uname) }}</span></button>
         <div class="menu" id="m-portal">
           <div class="head"><strong>{{ uname }}</strong><span class="small muted">{{ umail }}</span></div>
+          {% if pchoices != "none" %}<div class="sec">Appearance</div>
+          <div class="item">{{ sm.theme_switch() }}</div>
+          {{ sm.palette_picker() }}{% endif %}
           {% block user_menu %}{% endblock %}
           {% if user_links is defined and user_links %}{% for l in user_links %}<a href="{{ l.href }}">{{ sm.icon(l.icon or 'user', 'sm') }} {{ l.label }}</a>{% endfor %}{% endif %}
           {% if signout_url is defined and signout_url %}<a href="{{ signout_url }}">{{ sm.icon("signout", "sm") }} Sign out</a>{% endif %}

@@ -306,6 +306,7 @@ pre.pem { white-space: pre-wrap; word-break: break-all; font-size: 11px; max-hei
 .palettes .sw span { flex: 1; }
 .palettes .sw span:first-child { flex: 2; }
 .palettes .nm { padding: 8px 10px; display: flex; justify-content: space-between; align-items: center; }
+.palettes .pal-group { grid-column: 1 / -1; font-size: 12px; color: var(--muted); margin-top: 6px; }
 
 /* ============================================================== user pages (sign-in, BYOD, guests, registration) */
 .suitebar { height: var(--topbar-h); background: var(--top); color: var(--top-ink); display: flex; align-items: center; gap: 12px; padding: 0 16px; }
@@ -350,6 +351,26 @@ html:not([data-theme]) .logo-on-dark { display: none !important; }
 .suitebar .theme-switch button { color: var(--top-ink); }
 .suitebar .theme-switch button + button { border-left-color: rgba(255, 255, 255, .35); }
 .suitebar .theme-switch button[aria-pressed="true"] { background: rgba(255, 255, 255, .22); color: var(--top-ink); }
+/* user colour picker (user menu): swatches drawn by suite.js into [data-palette-picker] */
+.palette-picker { padding: 6px 10px 8px; }
+.palette-picker .pp-label { font-size: 12.5px; margin-bottom: 6px; display: flex; gap: 6px; }
+.palette-picker .pp-swatches { display: flex; flex-wrap: wrap; gap: 6px; }
+.palette-picker .pp-group { font-size: 11.5px; color: var(--muted); margin: 8px 0 4px; }
+.pp-sw { width: 30px; height: 30px; padding: 2px; border-radius: 50%; border: 2px solid transparent; background: transparent; cursor: pointer; display: inline-flex; }
+.pp-sw > span { flex: 1; border-radius: 50%; border: 1px solid var(--line-strong); display: inline-flex; align-items: center; justify-content: center; color: var(--ink); background: var(--panel-2); }
+.pp-sw .ic { width: 14px; height: 14px; }
+.pp-sw:hover > span { transform: scale(1.06); }
+.pp-sw[aria-pressed="true"] { border-color: var(--accent); }
+.pp-sw:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
+.pp-own > span { background: conic-gradient(#c50f1f, #ffb900, #107c10, #038387, #0f6cbd, #7160e8, #c50f1f); color: #fff; }
+.pp-own .ic { filter: drop-shadow(0 0 1px rgba(0, 0, 0, .7)); }
+.palette-picker .pp-custom { display: flex; gap: 14px; margin-top: 8px; font-size: 12.5px; }
+.palette-picker .pp-custom label { display: flex; align-items: center; gap: 6px; margin: 0; }
+.palette-picker input[type="color"] { width: 34px; height: 26px; padding: 0 2px; border: 1px solid var(--line-strong); border-radius: 4px; background: var(--panel); cursor: pointer; }
+.palette-custom { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 24px; margin-top: 14px; }
+.palette-custom label { display: flex; align-items: center; gap: 8px; margin: 0; }
+.palette-custom p { flex-basis: 100%; margin: 0; }
+.palette-custom input[type="color"] { width: 44px; height: 30px; padding: 0 2px; border: 1px solid var(--line-strong); border-radius: 4px; background: var(--panel); cursor: pointer; }
 
 /* small screens: navigation becomes a drawer */
 @media (max-width: 860px) {

@@ -8,7 +8,8 @@
       "top": "#414042",
       "btn_dark": "#00a3d6",
       "ink_dark": "#0b1a20",
-      "accent2": "#f7cf46"
+      "accent2": "#f7cf46",
+      "group": "Standard"
     },
     "cobalt": {
       "label": "Cobalt",
@@ -17,7 +18,8 @@
       "top": "#0f548c",
       "btn_dark": "#479ef5",
       "ink_dark": "#0a1a2e",
-      "accent2": "#ffb900"
+      "accent2": "#ffb900",
+      "group": "Standard"
     },
     "teal": {
       "label": "Teal",
@@ -26,7 +28,8 @@
       "top": "#024f52",
       "btn_dark": "#3ab3b7",
       "ink_dark": "#06201f",
-      "accent2": "#ffaa44"
+      "accent2": "#ffaa44",
+      "group": "Standard"
     },
     "violet": {
       "label": "Violet",
@@ -35,7 +38,8 @@
       "top": "#3b2e8c",
       "btn_dark": "#9d8ff5",
       "ink_dark": "#170f40",
-      "accent2": "#e3008c"
+      "accent2": "#e3008c",
+      "group": "Standard"
     },
     "forest": {
       "label": "Forest",
@@ -44,7 +48,8 @@
       "top": "#0b4f0b",
       "btn_dark": "#54b054",
       "ink_dark": "#062006",
-      "accent2": "#ffc83d"
+      "accent2": "#ffc83d",
+      "group": "Standard"
     },
     "crimson": {
       "label": "Crimson",
@@ -53,7 +58,8 @@
       "top": "#750b14",
       "btn_dark": "#f1707b",
       "ink_dark": "#2b0307",
-      "accent2": "#ffb900"
+      "accent2": "#ffb900",
+      "group": "Standard"
     },
     "graphite": {
       "label": "Graphite",
@@ -62,7 +68,118 @@
       "top": "#242b33",
       "btn_dark": "#a3b2c2",
       "ink_dark": "#11161b",
-      "accent2": "#2899f5"
+      "accent2": "#2899f5",
+      "group": "Standard"
+    },
+    "summer-popsicle": {
+      "label": "Summer Popsicle",
+      "accent": "#598d39",
+      "btn": "#507f33",
+      "top": "#2d372b",
+      "btn_dark": "#619343",
+      "ink_dark": "#0f160a",
+      "accent2": "#fd9ef8",
+      "group": "Fun"
+    },
+    "pasture-of-dreams": {
+      "label": "Pasture of Dreams",
+      "accent": "#c197d2",
+      "btn": "#876a93",
+      "top": "#382a40",
+      "btn_dark": "#c197d2",
+      "ink_dark": "#1d1720",
+      "accent2": "#fbc5ff",
+      "group": "Fun"
+    },
+    "berry-blues": {
+      "label": "Berry Blues",
+      "accent": "#ff2768",
+      "btn": "#d92158",
+      "top": "#4e1a3d",
+      "btn_dark": "#ff2768",
+      "ink_dark": "#260610",
+      "accent2": "#05e0e9",
+      "group": "Fun"
+    },
+    "icy-gradient": {
+      "label": "Icy Gradient",
+      "accent": "#3cacae",
+      "btn": "#2d8182",
+      "top": "#776391",
+      "btn_dark": "#3cacae",
+      "ink_dark": "#091a1a",
+      "accent2": "#eeb5eb",
+      "group": "Fun"
+    },
+    "deep-blue": {
+      "label": "The Deep Blue",
+      "accent": "#233dff",
+      "btn": "#233dff",
+      "top": "#050a30",
+      "btn_dark": "#6577ff",
+      "ink_dark": "#0f1226",
+      "accent2": "#a7b1ff",
+      "group": "Fun"
+    },
+    "christmas": {
+      "label": "Christmas",
+      "accent": "#c8102e",
+      "btn": "#c8102e",
+      "top": "#0b3d2e",
+      "btn_dark": "#d8586d",
+      "ink_dark": "#200d10",
+      "accent2": "#f2c14e",
+      "group": "Holidays"
+    },
+    "halloween": {
+      "label": "Halloween",
+      "accent": "#ff7518",
+      "btn": "#bf5812",
+      "top": "#1f1a24",
+      "btn_dark": "#ff7518",
+      "ink_dark": "#261204",
+      "accent2": "#9bde3a",
+      "group": "Holidays"
+    },
+    "thanksgiving": {
+      "label": "Thanksgiving",
+      "accent": "#c8601d",
+      "btn": "#b4561a",
+      "top": "#4a2c1a",
+      "btn_dark": "#cb6828",
+      "ink_dark": "#1e1006",
+      "accent2": "#e8b04b",
+      "group": "Holidays"
+    },
+    "valentines": {
+      "label": "Valentine's",
+      "accent": "#e0245e",
+      "btn": "#e0245e",
+      "top": "#6d0f2c",
+      "btn_dark": "#e54576",
+      "ink_dark": "#220a12",
+      "accent2": "#ffb3c7",
+      "group": "Holidays"
+    },
+    "st-patricks": {
+      "label": "St. Patrick's",
+      "accent": "#1a9e4b",
+      "btn": "#168640",
+      "top": "#0b4f2c",
+      "btn_dark": "#1a9e4b",
+      "ink_dark": "#04180b",
+      "accent2": "#f5c542",
+      "group": "Holidays"
+    },
+    "fourth-of-july": {
+      "label": "Fourth of July",
+      "accent": "#b22234",
+      "btn": "#b22234",
+      "top": "#0a2a66",
+      "btn_dark": "#c96471",
+      "ink_dark": "#1e0f11",
+      "accent2": "#a7c7ff",
+      "group": "Holidays"
     }
   }
 }

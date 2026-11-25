@@ -64,3 +64,32 @@
   {% if qr_url %}<div class="share-qr" hidden><img alt="QR code for {{ title }}" width="180" height="180" loading="lazy" data-src="{{ qr_url }}?u={{ url|urlencode }}"><a class="small" download="{{ title|lower|replace(' ', '-') }}-qr.svg" data-qr-dl>Download QR (SVG)</a></div>{% endif %}
 </div>
 {%- endmacro %}
+
+{#- The user's own colours, for the user menu: built-in palettes plus "Custom" (drawn by suite.js, which also saves the
+    choice in the browser and, with a cookie domain, shares it across apps). Shell and portal include it already. -#}
+{% macro palette_picker() -%}
+<div class="palette-picker" data-palette-picker role="group" aria-label="Colours"></div>
+{%- endmacro %}
+
+{#- Admin setting for the app's default colours. Put it inside your own <form method="post">; read the result with
+    suite_ui.palettes.from_form(form) and apply it with suite.set_palette(key, accent, top):
+      <form method="post">{{ sm.palette_form(suite.ui()) }}<button class="btn primary">Save</button></form> -#}
+{% macro palette_form(current) -%}
+{% set cur = current or suite.ui() %}
+<div class="palettes" role="radiogroup" aria-label="Colour palette">
+{% for key, p in suite.all_palettes.items() %}
+  {% if loop.changed(p.group) and not loop.first %}<div class="pal-group">{{ p.group }}</div>{% endif %}
+  <label><input type="radio" name="palette" value="{{ key }}"{% if cur.palette == key %} checked{% endif %}>
+    <span class="sw"><span style="background:{{ p.top }}"></span><span style="background:{{ p.accent }}"></span><span style="background:{{ p.accent2 }}"></span></span>
+    <span class="nm">{{ p.label }}{% if key == suite.default_palette %} <span class="small muted">default</span>{% endif %}</span></label>
+{% endfor %}
+  <label class="custom"><input type="radio" name="palette" value="custom"{% if cur.palette == "custom" %} checked{% endif %}>
+    <span class="sw"><span style="background:{{ cur.colors.top if cur.palette == 'custom' else '#414042' }}"></span><span style="background:{{ cur.accent if cur.palette == 'custom' else '#00a3d6' }}"></span></span>
+    <span class="nm">Custom</span></label>
+</div>
+<div class="palette-custom">
+  <label>Main colour <input type="color" name="accent" value="{{ cur.accent if cur.palette == 'custom' and cur.accent else '#00a3d6' }}"></label>
+  <label>Top bar <input type="color" name="top" value="{{ cur.top if cur.palette == 'custom' and cur.top else cur.colors.top }}"></label>
+  <p class="small muted">Pick "Custom" above to use these. Buttons and the top bar (made darker if needed) are adjusted automatically so white text on them stays readable (WCAG 4.5:1).</p>
+</div>
+{%- endmacro %}

@@ -3,8 +3,9 @@
 -#}
 {% import "suite/_macros.html" as sm with context %}
 {% set ui = ui if ui is defined and ui else suite.ui() %}
+{% set pchoices = suite.palette_choices(user_palettes if user_palettes is defined else none) %}
 <!doctype html>
-<html lang="en" data-palette="{{ ui.palette }}" style="{{ ui.style }}" data-suite-app="{{ suite.app_id }}" data-suite-static="{{ suite.static }}"
+<html lang="en" data-palette="{{ ui.palette }}" style="{{ ui.style }}" data-suite-palettes="{{ pchoices }}" data-suite-app="{{ suite.app_id }}" data-suite-static="{{ suite.static }}"
       {% if suite.cookie_domain %}data-suite-cookie-domain="{{ suite.cookie_domain }}"{% endif %}>
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
