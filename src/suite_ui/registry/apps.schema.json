@@ -26,6 +26,7 @@
           "label": { "type": "string" },
           "external": { "type": "boolean", "description": "Open the group's apps in a new tab" },
           "layout": { "enum": ["grid", "list"] },
+          "customizable": { "type": "boolean", "description": "People may hide, reorder and add their own links here (launcher Customize). Default: the first group, unless a group sets false" },
           "apps": {
             "type": "array",
             "items": {
