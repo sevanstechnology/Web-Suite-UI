@@ -10,6 +10,8 @@
 - New: **customise "Your apps"** in the launcher - hide, show, reorder and add your own links. Saved per person in
   the browser (and the shared cookie domain); `SuiteUI.appsCustom()` / `setAppsCustom()` and the `suite:apps-changed`
   event let apps store it on their server. Registry groups take `"customizable": true|false`.
+- New: `Suite(apps_mine_url=...)` / `data-suite-apps-mine-url` keeps each person's "Your apps" on the app's server
+  (GET / PUT JSON), so it follows them to other devices; `suite_ui.apps_mine.clean()` validates what is stored.
 - Registry: new tiles **Sevans.io admin** (`sevans-site`), **Pulse TV** (`pulse-tv`) and **Hepta** (`hepta`).
 - New icons: `play`, `tv` (original artwork).
 - Selected-row and info backgrounds now mix with the panel colour, so they suit dark palette looks.

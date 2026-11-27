@@ -7,13 +7,14 @@ from fastapi import FastAPI, Request
 from fastapi.templating import Jinja2Templates
 from pathlib import Path
 
-from fastapi.responses import RedirectResponse
-from suite_ui import Suite, palettes
+from fastapi.responses import JSONResponse, RedirectResponse
+from suite_ui import Suite, palettes, apps_mine
 
 app = FastAPI(title="Suite-UI demo")
 templates = Jinja2Templates(directory=Path(__file__).with_name("templates"))
 suite = Suite(app_id="demo", app_name="Demo App", org_name="Valley Baptist", help_search="/help?q=",
-              app_urls={"entranac": "https://nac.vbc.example/", "entranac-portal": "https://nac.vbc.example/enroll"})
+              app_urls={"entranac": "https://nac.vbc.example/", "entranac-portal": "https://nac.vbc.example/enroll"},
+              apps_mine_url="/api/me/suite-apps")
 suite.mount(app, templates)
 
 USER = {"name": "Steve Evans", "email": "steve@example.org"}
@@ -61,3 +62,20 @@ async def save_branding(request: Request):
     suite.set_palette(*palettes.from_form(form))
     suite.user_palettes = form.get("user_palettes") == "on"
     return RedirectResponse("/branding?saved=1", status_code=303)
+
+
+# "Your apps" kept per user on the server (a real app stores it in its database, keyed by the signed-in user)
+SAVED_APPS: dict[str, dict] = {}
+
+
+@app.get("/api/me/suite-apps")
+def get_my_apps():
+    return SAVED_APPS.get(USER["email"], {})
+
+
+@app.put("/api/me/suite-apps")
+async def put_my_apps(request: Request):
+    if request.headers.get("origin") not in (None, f"{request.url.scheme}://{request.url.netloc}"):
+        return JSONResponse({"error": "bad origin"}, status_code=403)
+    SAVED_APPS[USER["email"]] = apps_mine.clean(await request.json())
+    return SAVED_APPS[USER["email"]]

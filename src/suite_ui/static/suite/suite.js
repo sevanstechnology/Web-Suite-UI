@@ -10,6 +10,9 @@
  *   data-suite-audience="admin|user"     hide registry apps whose "audience" doesn't include this
  *
  *   data-suite-palettes="all"            colours users may pick for themselves: "all", "none" or e.g. "cobalt,teal,custom"
+ *   data-suite-apps-mine-url="/api/me/suite-apps"  keep each person's "Your apps" changes on the app's server too:
+ *                                        GET returns the saved object ({} = never saved), PUT stores it (JSON body)
+ *   data-suite-apps-custom="off"         no Customize button in the launcher
  *
  * Theme: "auto" (follow the operating system), "light" or "dark".
  * Colours: the page's style="--p-…" is the app default; a user's own pick ("suite-palette") is laid over it.
@@ -218,7 +221,7 @@
   // Saved in this browser ("suite-apps-mine", shared through data-suite-cookie-domain when it fits in a cookie).
   // {hide: [ids], order: [ids], add: [{id, name, url, icon, color}]}. Apps can keep it on their server too:
   // listen for the "suite:apps-changed" event and call SuiteUI.setAppsCustom(saved) on load. <html data-suite-apps-custom="off"> turns it off.
-  var MKEY = "suite-apps-mine", CUSTOM_ON = attr("data-suite-apps-custom", "on") !== "off";
+  var MKEY = "suite-apps-mine", CUSTOM_ON = attr("data-suite-apps-custom", "on") !== "off", MURL = attr("data-suite-apps-mine-url", "");
   var LINK_ICONS = ["globe", "apps", "doc", "table", "slides", "calendar", "chat", "mail", "teams", "cloud", "building", "people", "ticket",
                     "dashboard", "help", "star", "key", "server", "network", "wifi", "laptop", "settings", "shield", "sync", "inbox", "pin"];
   function mine() {
@@ -233,8 +236,26 @@
       var fits = v.length < 3000, sec = "; domain=" + COOKIE_DOMAIN + "; path=/; SameSite=Lax" + (location.protocol === "https:" ? "; Secure" : "");
       document.cookie = MKEY + "=" + (fits ? encodeURIComponent(v) : "") + sec + "; max-age=" + (fits && v ? 31536000 : 0);
     }
-    if (!quiet) try { document.dispatchEvent(new CustomEvent("suite:apps-changed", { detail: m })); } catch (e) {}
+    if (!quiet) { try { document.dispatchEvent(new CustomEvent("suite:apps-changed", { detail: m })); } catch (e) {} pushMine(m); }
   }
+  // server copy (data-suite-apps-mine-url): what the server has wins; a server that has nothing yet gets this browser's copy
+  function pushMine(m) {
+    if (!MURL || !window.fetch) return;
+    var h = { "Content-Type": "application/json", "X-Suite-UI": "1" }, tok = document.querySelector && document.querySelector('meta[name="csrf-token"]');
+    if (tok && tok.getAttribute("content")) h["X-CSRF-Token"] = tok.getAttribute("content");
+    fetch(MURL, { method: "PUT", credentials: "same-origin", headers: h, body: JSON.stringify(m) }).catch(function () {});
+  }
+  function pullMine(done) {
+    if (!MURL || !window.fetch) return;
+    fetch(MURL, { credentials: "same-origin", headers: { Accept: "application/json", "X-Suite-UI": "1" } })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (srv) {
+        if (!srv || typeof srv !== "object") return;
+        if (Object.prototype.toString.call(srv.hide) === "[object Array]") { saveMine(normMine(srv), true); if (done) done(); }
+        else { var l = mine(); if (l.hide.length || l.order.length || l.add.length) pushMine(l); }
+      }, function () {});
+  }
+  function normMine(m) { m = m || {}; return { hide: [].concat(m.hide || []), order: [].concat(m.order || []), add: [].concat(m.add || []).filter(function (a) { return a && a.id && a.name && okUrl(a.url); }) }; }
   function okUrl(u) { return /^(https?:\/\/[^\s"<>]+|\/[^\s"<>]*)$/i.test(String(u || "")); }
   function customGroup(r) {              // the group people may change: "customizable": true, else the first group
     var gs = r.groups || [], i;
@@ -373,7 +394,7 @@
       wbtn.setAttribute("aria-expanded", "false"); wbtn.setAttribute("aria-controls", "suite-launcher");
       panel.innerHTML = '<div class="sl-empty">Loading apps…</div>';
       withRegistry(function (r) { renderLauncher(panel, r); });
-      if (CUSTOM_ON) initCustomize(panel);
+      if (CUSTOM_ON) { initCustomize(panel); pullMine(function () { if (!panel._edit) withRegistry(function (r) { renderLauncher(panel, r); }); }); }
     }
 
     // page icon next to the page title, from the current menu entry
@@ -547,7 +568,7 @@
                      palettes: PALETTES, customPalette: customPalette, contrast: contrast,
                      // the person's own "Your apps" (hide / order / add); setAppsCustom(null) resets. Changes fire "suite:apps-changed".
                      appsCustom: mine, setAppsCustom: function (m) {
-                       m = m || {}; saveMine({ hide: [].concat(m.hide || []), order: [].concat(m.order || []), add: [].concat(m.add || []) }, true);
+                       saveMine(normMine(m), true);
                        var pn = document.getElementById("suite-launcher"); if (pn && registry) renderLauncher(pn, registry);
                      } };
 })();

@@ -74,8 +74,14 @@ links (name, https address, icon, tile colour). It is saved in the browser as `s
 `cookie_domain`, in a cookie for the parent domain so it follows them between apps (when it fits in a cookie).
 Their own links also show up in the top-bar search. `<html data-suite-apps-custom="off">` turns it off.
 
-To keep it on your server as well: listen for `document.addEventListener("suite:apps-changed", e => save(e.detail))`
-and call `SuiteUI.setAppsCustom(saved)` on load. `SuiteUI.appsCustom()` returns the current choice;
+To keep it on the app's server too (so it follows the person to other devices), give the endpoint:
+`Suite(apps_mine_url="/api/me/suite-apps")` or `<html data-suite-apps-mine-url="…">`. suite.js then sends
+`GET` (return the saved object, or `{}` if the person never saved one - their browser copy is uploaded then) and
+`PUT` with the JSON body after each change; what the server has wins. Store `suite_ui.apps_mine.clean(body)` per
+signed-in user, require the session for both and check `Origin` (or your CSRF token - suite.js sends
+`<meta name="csrf-token">` as `X-CSRF-Token`) on PUT. `examples/fastapi` has a working pair. Node / Workers apps copy
+the same rules (ids `^[a-z0-9-]{1,64}$`, own links `my-…` with https / `/path` URLs, at most 100 ids and 30 links).
+Scripts can also listen for `suite:apps-changed` and call `SuiteUI.setAppsCustom(saved)`. `SuiteUI.appsCustom()` returns the current choice;
 `SuiteUI.setAppsCustom(null)` resets it. Only `https://`, `http://` and `/path` links are accepted.
 
 ## Layout classes

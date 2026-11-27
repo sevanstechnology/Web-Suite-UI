@@ -263,3 +263,18 @@ def test_registry_has_suite_apps_and_customizable_group():
     mine = reg["groups"][0]
     assert mine["customizable"] is True
     assert {"sevans-site", "pulse-tv", "hepta"} <= {a["id"] for a in mine["apps"]}
+
+
+def test_apps_mine_clean_and_server_copy(client):
+    from suite_ui import apps_mine
+    bad = {"hide": ["ok-id", "<script>", 5], "order": "x", "evil": 1,
+           "add": [{"id": "my-1", "name": " PCO ", "url": "https://pco.example/", "icon": "x\"y", "color": "#ABCDEF"},
+                   {"id": "my-2", "name": "js", "url": "javascript:alert(1)"}, {"id": "nope", "name": "n", "url": "/x"}]}
+    assert apps_mine.clean(bad) == {"hide": ["ok-id"], "order": [], "add": [
+        {"id": "my-1", "name": "PCO", "url": "https://pco.example/", "icon": "globe", "color": "#abcdef"}]}
+    assert apps_mine.clean(None) == {"hide": [], "order": [], "add": []}
+    assert 'data-suite-apps-mine-url="/api/me/suite-apps"' in client.get("/").text
+    assert client.get("/api/me/suite-apps").json() == {}
+    assert client.put("/api/me/suite-apps", json=bad, headers={"origin": "https://evil.example"}).status_code == 403
+    assert client.put("/api/me/suite-apps", json={"hide": ["hepta"]}).json()["hide"] == ["hepta"]
+    assert client.get("/api/me/suite-apps").json()["hide"] == ["hepta"]

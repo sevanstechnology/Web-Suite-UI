@@ -9,7 +9,8 @@
 <!doctype html>
 <html lang="{% block lang %}en{% endblock %}" data-palette="{{ ui.palette }}" style="{{ ui.style }}" data-suite-palettes="{{ pchoices }}" data-suite-app="{{ suite.app_id }}"
       data-suite-static="{{ suite.static }}" data-suite-audience="{{ audience if audience is defined and audience else 'user' }}"
-      {% if suite.cookie_domain %}data-suite-cookie-domain="{{ suite.cookie_domain }}"{% endif %}>
+      {% if suite.cookie_domain %}data-suite-cookie-domain="{{ suite.cookie_domain }}"{% endif %}
+      {% if suite.apps_mine_url %}data-suite-apps-mine-url="{{ suite.apps_mine_url }}"{% endif %}>
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{% block title %}{% endblock %} · {{ suite.org_name or suite.app_name }}</title>
