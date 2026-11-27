@@ -23,10 +23,6 @@
           "url": "https://entranac.example.org/enroll", "icon": "laptop", "color": "#00a4d6", "audience": ["admin", "user"] },
         { "id": "church-help", "name": "Church Help", "description": "Help desk, help articles and system status for staff and volunteers",
           "url": "https://valleybaptist.help/", "icon": "help", "color": "#00a4d6" },
-        { "id": "facility-hub", "name": "Facility Hub", "description": "Events, door schedules and the facilities help desk",
-          "url": "https://facility.valleybaptist.help/", "icon": "building", "color": "#5b4bd4" },
-        { "id": "pulse-tv", "name": "Pulse TV", "description": "ChurchPulse room and lobby screens, parent pager and Soundtrack music",
-          "url": "https://tv.example.org/admin/", "icon": "tv", "color": "#ca5010", "audience": ["admin"] },
         { "id": "hepta", "name": "Hepta", "description": "Your media server - movies, TV and music on every screen",
           "url": "https://my.hepta.stream/admin/", "icon": "play", "color": "#7c5cff", "audience": ["admin"] }
       ]

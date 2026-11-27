@@ -49,10 +49,10 @@ def test_palettes_are_accessible():
 
 
 def test_url_overrides(monkeypatch):
-    monkeypatch.setenv("SUITE_APP_URL_FACILITY_HUB", "https://fh.example/")
+    monkeypatch.setenv("SUITE_APP_URL_CHURCH_HELP", "https://ch.example/")
     s = Suite("entranac", "EntraNAC", home_url="/", app_urls={"teams": "https://teams.example/"})
     apps = {a["id"]: a for a in s.apps()}
-    assert apps["facility-hub"]["url"] == "https://fh.example/"
+    assert apps["church-help"]["url"] == "https://ch.example/"
     assert apps["teams"]["url"] == "https://teams.example/"
     assert apps["entranac"]["url"] == "/"          # this app links to its own home
     assert "copilot" in apps and apps["copilot"]["external"]
@@ -262,7 +262,8 @@ def test_registry_has_suite_apps_and_customizable_group():
     reg = json.loads((PKG / "registry/apps.json").read_text())
     mine = reg["groups"][0]
     assert mine["customizable"] is True
-    assert {"sevans-site", "pulse-tv", "hepta"} <= {a["id"] for a in mine["apps"]}
+    ids = {a["id"] for a in mine["apps"]}
+    assert {"sevans-site", "hepta"} <= ids and not {"facility-hub", "pulse-tv"} & ids
 
 
 def test_apps_mine_clean_and_server_copy(client):
