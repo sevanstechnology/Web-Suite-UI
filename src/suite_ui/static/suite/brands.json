@@ -1,0 +1,27 @@
+{
+  "default": "valley-baptist",
+  "brands": {
+    "sevans-technology": {
+      "label": "Sevans Technology",
+      "palette": "sevans-technology",
+      "site": "https://sevans.io",
+      "logos": {
+        "on-dark": "brand/sevans-technology/logo-on-dark.png",
+        "on-light": "brand/sevans-technology/logo-on-light.png",
+        "favicon": "brand/sevans-technology/favicon.png",
+        "icon": "brand/sevans-technology/icon.png"
+      }
+    },
+    "valley-baptist": {
+      "label": "Valley Baptist",
+      "palette": "valley-baptist",
+      "site": "https://valleybaptist.org",
+      "logos": {
+        "on-dark": "brand/valley-baptist/logo-on-dark.png",
+        "on-light": "brand/valley-baptist/logo-on-light.png",
+        "favicon": "brand/valley-baptist/favicon.png",
+        "icon": "brand/valley-baptist/icon.png"
+      }
+    }
+  }
+}

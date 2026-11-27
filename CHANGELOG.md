@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.3.0
+- New: **built-in brands** - a palette plus a logo set, chosen with one setting. `static/suite/brands.json` lists
+  **Sevans Technology** (`sevans-technology`: sevans.io logos, Sevans Technology palette) and **Valley Baptist**
+  (`valley-baptist`, still the default). Logos live in `static/suite/brand/<brand>/` (`logo-on-dark.png`,
+  `logo-on-light.png`, `favicon.png`, `icon.png`). `Suite(brand=...)` uses the brand's logos and palette unless
+  `logos=` / `palette=` are given; `suite.brand` says which is active; `suite_ui.brands` has `BRANDS`, `get()`,
+  `key()` and `logos()`.
+- `Suite(palette=None)` (the new default) means "the brand's palette"; passing a palette works as before.
+- The flat Valley Baptist files in `static/suite/brand/` are kept for compatibility.
+
 ## 0.2.1
 - Registry: **Facility Hub** and **Pulse TV** removed from the shared "Your apps" menu. An app that still wants
   them can add them in its own registry copy (or people can add them as their own links with Customize).

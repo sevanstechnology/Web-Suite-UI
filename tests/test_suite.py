@@ -279,3 +279,21 @@ def test_apps_mine_clean_and_server_copy(client):
     assert client.put("/api/me/suite-apps", json=bad, headers={"origin": "https://evil.example"}).status_code == 403
     assert client.put("/api/me/suite-apps", json={"hide": ["hepta"]}).json()["hide"] == ["hepta"]
     assert client.get("/api/me/suite-apps").json()["hide"] == ["hepta"]
+
+
+def test_brands():
+    from suite_ui import Suite, brands
+    assert set(brands.BRANDS) >= {"sevans-technology", "valley-baptist"}
+    s = Suite(app_id="x", app_name="X", brand="sevans-technology")
+    assert s.logo("on-dark").endswith("/brand/sevans-technology/logo-on-dark.png")
+    assert s.ui()["palette"] == "sevans-technology"
+    d = Suite(app_id="x", app_name="X")
+    assert d.brand == "valley-baptist" and d.ui()["palette"] == "valley-baptist"
+    assert d.logo("favicon").endswith("/brand/valley-baptist/favicon.png")
+    assert Suite(app_id="x", app_name="X", brand="sevans-technology", palette="cobalt").ui()["palette"] == "cobalt"
+    import pathlib, suite_ui
+    root = pathlib.Path(suite_ui.__file__).parent / "static" / "suite"
+    for b in brands.BRANDS.values():
+        assert b["palette"] in suite_ui.palettes.PALETTES
+        for p in b["logos"].values():
+            assert (root / p).is_file(), p

@@ -21,7 +21,7 @@ from typing import Any, Iterable
 
 from markupsafe import Markup
 
-from . import palettes
+from . import brands, palettes
 from .palettes import PALETTES, DEFAULT_PALETTE, custom_palette, contrast
 
 __all__ = ["Suite", "palettes", "PALETTES", "DEFAULT_PALETTE", "custom_palette", "contrast", "STATIC_DIR", "TEMPLATE_DIR"]
@@ -59,7 +59,7 @@ class Suite:
                  registry: str | os.PathLike | dict | None = None, app_urls: dict[str, str] | None = None,
                  static_url: str = "/static/suite", cookie_domain: str | None = None, help_search: str = "",
                  logos: dict[str, str] | None = None, copilot: bool = True, registry_ttl: int = 300,
-                 palette: str = DEFAULT_PALETTE, accent: str = "", top: str = "",
+                 palette: str | None = None, accent: str = "", top: str = "", brand: str | None = None,
                  user_palettes: bool | Iterable[str] = True, apps_mine_url: str = ""):
         """
         app_id / app_name  this app's id in the registry (highlighted in the launcher) and display name
@@ -69,7 +69,9 @@ class Suite:
         static_url         where the suite static files are served (mount() serves them there)
         cookie_domain      e.g. ".sevans.io" so light/dark follows the user across apps. Default: $SUITE_COOKIE_DOMAIN
         help_search        URL prefix for "Search the help for …" in the top-bar search, e.g. "/help?q="
-        logos              {"on-dark": url, "on-light": url, "favicon": url}; defaults to the bundled Valley Baptist files
+        brand              a built-in brand from brands.json ("sevans-technology", "valley-baptist"): its logos and
+                           palette become the defaults. None = the default brand (Valley Baptist)
+        logos              {"on-dark": url, "on-light": url, "favicon": url}; defaults to the brand's bundled files
         copilot            show the Copilot button in the top bar when the registry has suite.copilot_url
         palette / accent / top
                            the app's default colours, chosen by an admin: a palette id, or "custom" with accent
@@ -87,9 +89,10 @@ class Suite:
         self.help_search, self.copilot = help_search, copilot
         self._registry_src = registry if registry is not None else os.environ.get("SUITE_REGISTRY") or None
         self.app_urls = dict(app_urls or {})
-        self._logos = {"on-dark": f"{self.static}/brand/logo-horizontal-white.png",
-                       "on-light": f"{self.static}/brand/logo-horizontal-dark.png",
-                       "favicon": f"{self.static}/brand/favicon.png", **(logos or {})}
+        self.brand = brands.key(brand or brands.DEFAULT_BRAND)
+        self._logos = {**brands.logos(self.brand, self.static), **(logos or {})}
+        if palette is None:
+            palette = brands.get(self.brand)["palette"]
         self._ttl, self._cache = registry_ttl, (0.0, None)
         self.version = __version__
         self.set_palette(palette, accent, top)

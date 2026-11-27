@@ -96,5 +96,9 @@ static zip to a GitHub release.
 
 - The launcher uses original line icons on coloured tiles, not Microsoft's product logos, so the repository is safe
   to make public. Each tile is labelled with the product name.
-- `static/suite/brand/` holds the Valley Baptist logos used as defaults. Pass `logos={...}` to `Suite` (or call
-  `suite.set_logos(...)`) to use an app's own uploaded logos, as EntraNAC's Branding page does.
+- **Brands**: `static/suite/brand/<brand>/` holds built-in logo sets - **Sevans Technology** (`sevans-technology`,
+  from the sevans.io logo kit) and **Valley Baptist** (`valley-baptist`, the default) - listed in
+  `static/suite/brands.json` with each brand's palette. `Suite(brand="sevans-technology")` uses that brand's logos
+  and palette; `suite_ui.brands.logos(brand, static_url)` gives the URLs. Pass `logos={...}` to `Suite` (or call
+  `suite.set_logos(...)`) to use an app's own uploaded logos, as EntraNAC's Branding page does. The older flat files
+  in `static/suite/brand/` (Valley Baptist) stay for apps that link to them.
