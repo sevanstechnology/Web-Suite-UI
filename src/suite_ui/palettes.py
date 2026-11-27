@@ -2,6 +2,10 @@
 
 Each palette: label, accent (brand colour), btn (light-mode buttons/links, readable with white text), top (top bar,
 dark enough for white text), btn_dark (dark-mode buttons), ink_dark (text on btn_dark), accent2 (highlights).
+
+Optional "look" (a palette that brings a whole brand, e.g. Hepta / Sevans Technology): "light" and "dark" objects with
+surface colours (bg, panel, panel_2, ink, ink_strong, muted, line, line_strong, hover, nav, nav_ink, nav_muted, top),
+"font_head" (heading font; Space Grotesk ships with Suite-UI) and "radius" / "radius_lg" in px. See look_vars().
 """
 from __future__ import annotations
 
@@ -61,6 +65,29 @@ def _until(h: str, toward: str, against: str, need: float) -> str:
     return toward
 
 
+SURFACES = ("bg", "panel", "panel_2", "ink", "ink_strong", "muted", "line", "line_strong", "hover", "nav", "nav_ink",
+            "nav_muted", "top")
+_FONT = re.compile(r"^[\w .-]+$")
+
+
+def look_vars(p: dict) -> dict[str, str]:
+    """CSS variables for a palette's optional look: --pl-* (light surfaces), --pd-* (dark), --p-head, --p-radius(-lg).
+
+    suite.css falls back to the plain Suite look for anything not set; suite.js lookVars() does the same in the browser."""
+    out: dict[str, str] = {}
+    for mode in ("light", "dark"):
+        for n in SURFACES:
+            v = (p.get(mode) or {}).get(n)
+            if is_hex(v):
+                out[f"--p{mode[0]}-{n.replace('_', '-')}"] = v
+    if p.get("font_head") and _FONT.match(p["font_head"]):
+        out["--p-head"] = f'"{p["font_head"]}", var(--font)'
+    for k in ("radius", "radius_lg"):
+        if isinstance(p.get(k), (int, float)) and p[k] >= 0:
+            out["--p-" + k.replace("_", "-")] = f"{p[k]}px"
+    return out
+
+
 def custom_palette(accent: str, top: str = "") -> dict:
     """Build an accessible palette (WCAG 4.5:1 for buttons and the top bar) from one brand colour."""
     btn = _until(accent, "#000000", "#ffffff", 4.5)
@@ -110,4 +137,5 @@ def ui(key: str = DEFAULT_PALETTE, accent: str = "", top: str = "") -> dict:
     style = (f"--p-accent:{p['accent']};--p-btn:{p['btn']};--p-btn-hover:{mix(p['btn'], '#000000', 0.12)};"
              f"--p-top:{p['top']};--p-btn-dark:{p['btn_dark']};--p-ink-dark:{p['ink_dark']};"
              f"--p-btn-dark-hover:{mix(p['btn_dark'], '#ffffff', 0.12)};--p-accent2:{p['accent2']}")
+    style += "".join(f";{k}:{v}" for k, v in look_vars(p).items())
     return {"palette": key, "style": style, "colors": p, "accent": given[0], "top": given[1], "code": encode(key, accent, top)}

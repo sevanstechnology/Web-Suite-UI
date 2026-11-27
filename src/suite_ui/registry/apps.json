@@ -13,7 +13,10 @@
     {
       "id": "sevans",
       "label": "Your apps",
+      "customizable": true,
       "apps": [
+        { "id": "sevans-site", "name": "Sevans.io admin", "description": "Website leads, projects, quotes and billing",
+          "url": "https://sevans.io/admin/", "icon": "globe", "color": "#7c5cff", "audience": ["admin"] },
         { "id": "entranac", "name": "EntraNAC", "description": "Network access control and RADIUS on Entra ID",
           "url": "https://entranac.example.org/", "icon": "shield-check", "color": "#007ea6", "audience": ["admin"] },
         { "id": "entranac-portal", "name": "My devices", "description": "Register and manage your Wi-Fi devices (EntraNAC)",
@@ -21,7 +24,11 @@
         { "id": "church-help", "name": "Church Help", "description": "Help desk, help articles and system status for staff and volunteers",
           "url": "https://valleybaptist.help/", "icon": "help", "color": "#00a4d6" },
         { "id": "facility-hub", "name": "Facility Hub", "description": "Events, door schedules and the facilities help desk",
-          "url": "https://facility.valleybaptist.help/", "icon": "building", "color": "#5b4bd4" }
+          "url": "https://facility.valleybaptist.help/", "icon": "building", "color": "#5b4bd4" },
+        { "id": "pulse-tv", "name": "Pulse TV", "description": "ChurchPulse room and lobby screens, parent pager and Soundtrack music",
+          "url": "https://tv.example.org/admin/", "icon": "tv", "color": "#ca5010", "audience": ["admin"] },
+        { "id": "hepta", "name": "Hepta", "description": "Your media server - movies, TV and music on every screen",
+          "url": "https://my.hepta.stream/admin/", "icon": "play", "color": "#7c5cff", "audience": ["admin"] }
       ]
     },
     {

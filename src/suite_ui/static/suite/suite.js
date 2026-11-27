@@ -10,6 +10,9 @@
  *   data-suite-audience="admin|user"     hide registry apps whose "audience" doesn't include this
  *
  *   data-suite-palettes="all"            colours users may pick for themselves: "all", "none" or e.g. "cobalt,teal,custom"
+ *   data-suite-apps-mine-url="/api/me/suite-apps"  keep each person's "Your apps" changes on the app's server too:
+ *                                        GET returns the saved object ({} = never saved), PUT stores it (JSON body)
+ *   data-suite-apps-custom="off"         no Customize button in the launcher
  *
  * Theme: "auto" (follow the operating system), "light" or "dark".
  * Colours: the page's style="--p-…" is the app default; a user's own pick ("suite-palette") is laid over it.
@@ -62,6 +65,8 @@
     "forest": {"label":"Forest","accent":"#107c10","btn":"#0e700e","top":"#0b4f0b","btn_dark":"#54b054","ink_dark":"#062006","accent2":"#ffc83d","group":"Standard"},
     "crimson": {"label":"Crimson","accent":"#c50f1f","btn":"#b10e1c","top":"#750b14","btn_dark":"#f1707b","ink_dark":"#2b0307","accent2":"#ffb900","group":"Standard"},
     "graphite": {"label":"Graphite","accent":"#4a5866","btn":"#44505c","top":"#242b33","btn_dark":"#a3b2c2","ink_dark":"#11161b","accent2":"#2899f5","group":"Standard"},
+    "sevans-technology": {"label":"Sevans Technology","accent":"#7c5cff","btn":"#6446e8","top":"#1c1937","btn_dark":"#9d86ff","ink_dark":"#0b0d17","accent2":"#e9b949","group":"Sevans","font_head":"Space Grotesk","radius":10,"radius_lg":16,"light":{"bg":"#f4f5fa","panel":"#ffffff","panel_2":"#f6f7fb","line":"#e4e6ef","line_strong":"#c9cdda","hover":"#eef0f7","nav":"#ffffff","ink":"#2b2f3d","ink_strong":"#0b0d17","muted":"#5b6275","nav_ink":"#2b2f3d","nav_muted":"#5b6275"},"dark":{"bg":"#0b0d17","panel":"#141829","panel_2":"#1b2035","line":"#242a40","line_strong":"#353d5a","hover":"#1d2238","nav":"#0e1120","ink":"#e6e9f2","ink_strong":"#f5f7fa","muted":"#a8b0c2","nav_ink":"#e6e9f2","nav_muted":"#8d96ad","top":"#10131f"}},
+    "hepta": {"label":"Hepta","accent":"#7c5cff","btn":"#6446e8","top":"#1c1937","btn_dark":"#9d86ff","ink_dark":"#0b0d17","accent2":"#f5a524","group":"Sevans","font_head":"Space Grotesk","radius":10,"radius_lg":16,"light":{"bg":"#f4f5fa","panel":"#ffffff","panel_2":"#f6f7fb","line":"#e4e6ef","line_strong":"#c9cdda","hover":"#eef0f7","nav":"#ffffff","ink":"#2b2f3d","ink_strong":"#0b0d17","muted":"#5b6275","nav_ink":"#2b2f3d","nav_muted":"#5b6275"},"dark":{"bg":"#0b0d17","panel":"#141829","panel_2":"#1b2035","line":"#242a40","line_strong":"#353d5a","hover":"#1d2238","nav":"#0e1120","ink":"#e6e9f2","ink_strong":"#f5f7fa","muted":"#a8b0c2","nav_ink":"#e6e9f2","nav_muted":"#8d96ad","top":"#10131f"}},
     "summer-popsicle": {"label":"Summer Popsicle","accent":"#598d39","btn":"#507f33","top":"#2d372b","btn_dark":"#619343","ink_dark":"#0f160a","accent2":"#fd9ef8","group":"Fun"},
     "pasture-of-dreams": {"label":"Pasture of Dreams","accent":"#c197d2","btn":"#876a93","top":"#382a40","btn_dark":"#c197d2","ink_dark":"#1d1720","accent2":"#fbc5ff","group":"Fun"},
     "berry-blues": {"label":"Berry Blues","accent":"#ff2768","btn":"#d92158","top":"#4e1a3d","btn_dark":"#ff2768","ink_dark":"#260610","accent2":"#05e0e9","group":"Fun"},
@@ -108,6 +113,21 @@
     put(PKEY, v);
     if (COOKIE_DOMAIN) document.cookie = PKEY + "=" + encodeURIComponent(v) + "; domain=" + COOKIE_DOMAIN + "; path=/; max-age=" + (v ? 31536000 : 0) + "; SameSite=Lax" + (location.protocol === "https:" ? "; Secure" : "");
   }
+  // optional palette "look": "light" / "dark" surface colours, "font_head" and "radius" / "radius_lg" (px). palettes.py look_vars() matches.
+  var SURFACES = ["bg", "panel", "panel_2", "ink", "ink_strong", "muted", "line", "line_strong", "hover", "nav", "nav_ink", "nav_muted", "top"];
+  var LOOK_VARS = ["--p-head", "--p-radius", "--p-radius-lg"];
+  SURFACES.forEach(function (n) { LOOK_VARS.push("--pl-" + n.replace("_", "-"), "--pd-" + n.replace("_", "-")); });
+  function lookVars(c) {
+    var out = {};
+    ["light", "dark"].forEach(function (m) {
+      var s = c[m] || {};
+      SURFACES.forEach(function (n) { if (isHex(s[n])) out["--p" + m.charAt(0) + "-" + n.replace("_", "-")] = s[n]; });
+    });
+    if (c.font_head && /^[\w .-]+$/.test(c.font_head)) out["--p-head"] = '"' + c.font_head + '", var(--font)';
+    if (c.radius >= 0) out["--p-radius"] = c.radius + "px";
+    if (c.radius_lg >= 0) out["--p-radius-lg"] = c.radius_lg + "px";
+    return out;
+  }
   function applyPalette(v) {
     var p = parsePalette(v);
     root.setAttribute("style", BASE_STYLE);
@@ -117,6 +137,9 @@
       var c = p.colors, vars = { accent: c.accent, btn: c.btn, "btn-hover": mix(c.btn, "#000000", 0.12), top: c.top, "btn-dark": c.btn_dark,
                                  "ink-dark": c.ink_dark, "btn-dark-hover": mix(c.btn_dark, "#ffffff", 0.12), accent2: c.accent2 };
       for (var k in vars) root.style.setProperty("--p-" + k, vars[k]);
+      // a palette may carry its own look (surfaces, heading font, corners); one without it gets the plain Suite look
+      var look = lookVars(c);
+      LOOK_VARS.forEach(function (n) { if (look[n] != null) root.style.setProperty(n, look[n]); else if (root.style.removeProperty) root.style.removeProperty(n); });
     }
     syncPicker();
   }
@@ -194,15 +217,75 @@
   function external(a, g) { return a.external != null ? a.external : !!(g && g.external); }
   function tile(a) { return '<span class="sl-tile" style="--tile:' + esc(a.color || "") + '">' + icon(a.image || a.icon) + "</span>"; }
 
+  // ---------------------------------------------------------------- "Your apps": each person can hide, reorder and add links
+  // Saved in this browser ("suite-apps-mine", shared through data-suite-cookie-domain when it fits in a cookie).
+  // {hide: [ids], order: [ids], add: [{id, name, url, icon, color}]}. Apps can keep it on their server too:
+  // listen for the "suite:apps-changed" event and call SuiteUI.setAppsCustom(saved) on load. <html data-suite-apps-custom="off"> turns it off.
+  var MKEY = "suite-apps-mine", CUSTOM_ON = attr("data-suite-apps-custom", "on") !== "off", MURL = attr("data-suite-apps-mine-url", "");
+  var LINK_ICONS = ["globe", "apps", "doc", "table", "slides", "calendar", "chat", "mail", "teams", "cloud", "building", "people", "ticket",
+                    "dashboard", "help", "star", "key", "server", "network", "wifi", "laptop", "settings", "shield", "sync", "inbox", "pin"];
+  function mine() {
+    var raw = cookie(MKEY) || get(MKEY, "");
+    try { var m = JSON.parse(raw || "{}") || {}; } catch (e) { m = {}; }
+    return { hide: [].concat(m.hide || []), order: [].concat(m.order || []), add: [].concat(m.add || []).filter(function (a) { return a && a.id && a.name && okUrl(a.url); }) };
+  }
+  function saveMine(m, quiet) {
+    var empty = !m.hide.length && !m.order.length && !m.add.length, v = empty ? "" : JSON.stringify(m);
+    put(MKEY, v);
+    if (COOKIE_DOMAIN) {
+      var fits = v.length < 3000, sec = "; domain=" + COOKIE_DOMAIN + "; path=/; SameSite=Lax" + (location.protocol === "https:" ? "; Secure" : "");
+      document.cookie = MKEY + "=" + (fits ? encodeURIComponent(v) : "") + sec + "; max-age=" + (fits && v ? 31536000 : 0);
+    }
+    if (!quiet) { try { document.dispatchEvent(new CustomEvent("suite:apps-changed", { detail: m })); } catch (e) {} pushMine(m); }
+  }
+  // server copy (data-suite-apps-mine-url): what the server has wins; a server that has nothing yet gets this browser's copy
+  function pushMine(m) {
+    if (!MURL || !window.fetch) return;
+    var h = { "Content-Type": "application/json", "X-Suite-UI": "1" }, tok = document.querySelector && document.querySelector('meta[name="csrf-token"]');
+    if (tok && tok.getAttribute("content")) h["X-CSRF-Token"] = tok.getAttribute("content");
+    fetch(MURL, { method: "PUT", credentials: "same-origin", headers: h, body: JSON.stringify(m) }).catch(function () {});
+  }
+  function pullMine(done) {
+    if (!MURL || !window.fetch) return;
+    fetch(MURL, { credentials: "same-origin", headers: { Accept: "application/json", "X-Suite-UI": "1" } })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (srv) {
+        if (!srv || typeof srv !== "object") return;
+        if (Object.prototype.toString.call(srv.hide) === "[object Array]") { saveMine(normMine(srv), true); if (done) done(); }
+        else { var l = mine(); if (l.hide.length || l.order.length || l.add.length) pushMine(l); }
+      }, function () {});
+  }
+  function normMine(m) { m = m || {}; return { hide: [].concat(m.hide || []), order: [].concat(m.order || []), add: [].concat(m.add || []).filter(function (a) { return a && a.id && a.name && okUrl(a.url); }) }; }
+  function okUrl(u) { return /^(https?:\/\/[^\s"<>]+|\/[^\s"<>]*)$/i.test(String(u || "")); }
+  function customGroup(r) {              // the group people may change: "customizable": true, else the first group
+    var gs = r.groups || [], i;
+    for (i = 0; i < gs.length; i++) if (gs[i].customizable) return gs[i];
+    for (i = 0; i < gs.length; i++) if (gs[i].customizable === false) return null;
+    return gs[0] || null;
+  }
+  function myApps(g, m, all) {           // the group's apps in the person's order, with their own links; all = keep hidden ones
+    var list = g.apps.concat(m.add.map(function (a) { return { id: a.id, name: a.name, url: a.url, icon: a.icon || "globe", color: a.color || "", mine: true, external: true }; }));
+    var pos = function (a) { var i = m.order.indexOf(a.id); return i < 0 ? 1e6 + list.indexOf(a) : i; };
+    list.sort(function (a, b) { return pos(a) - pos(b); });
+    return all ? list : list.filter(function (a) { return m.hide.indexOf(a.id) < 0; });
+  }
+  function shownGroups(r) {              // what the launcher and the search show
+    var cg = CUSTOM_ON ? customGroup(r) : null, m = cg ? mine() : null;
+    return (r.groups || []).map(function (g) { return g === cg ? { id: g.id, label: g.label, layout: g.layout, external: g.external, apps: myApps(g, m, false), custom: true } : g; });
+  }
+
   function renderLauncher(panel, r) {
     var html = ['<div class="sl-head"><strong>' + esc((r.suite && r.suite.label) || "Apps") + "</strong>"];
     if (r.suite && r.suite.all_apps_url) html.push('<a href="' + esc(r.suite.all_apps_url) + '" target="_blank" rel="noopener">' + esc(r.suite.all_apps_label || "All apps") + " " + icon("external") + "</a>");
     html.push("</div>");
     var any = false;
-    (r.groups || []).forEach(function (g) {
-      if (!g.apps.length) return;
+    if (panel._edit) { html.push(editor(r)); panel.innerHTML = html.join(""); return; }
+    shownGroups(r).forEach(function (g) {
+      if (!g.apps.length && !g.custom) return;
       any = true;
-      html.push('<div class="sl-sec">' + esc(g.label) + "</div>");
+      html.push('<div class="sl-sec">' + esc(g.label) + (g.custom ? '<button type="button" class="sl-edit" data-sl="edit" title="Hide, reorder or add apps">' +
+                icon("settings", "sm") + "Customize</button>" : "") + "</div>");
+      if (!g.apps.length) { html.push('<div class="sl-empty">All hidden - choose Customize to show them again.</div>'); return; }
       html.push(g.layout === "list" ? '<div class="sl-list">' : '<div class="sl-grid">');
       g.apps.forEach(function (a) {
         var ext = external(a, g), cur = a.id === APP;
@@ -222,6 +305,66 @@
       html.push('<div class="sl-foot"><span class="muted">' + esc(r.suite.name || "") + "</span>" +
                 (r.suite.home_url ? '<a href="' + esc(r.suite.home_url) + '">' + esc(r.suite.home_label || "Home") + "</a>" : "") + "</div>");
     panel.innerHTML = html.join("");
+  }
+
+  function editor(r) {                   // edit mode for "Your apps"
+    var g = customGroup(r), m = mine(), list = myApps(g, m, true), h = ['<div class="sl-sec">' + esc(g.label) + "</div>", '<ul class="sl-edit-list">'];
+    list.forEach(function (a, i) {
+      var off = m.hide.indexOf(a.id) >= 0;
+      h.push('<li class="' + (off ? "off" : "") + '" data-id="' + esc(a.id) + '">' + tile(a) + '<span class="nm">' + esc(a.name) +
+             (a.mine ? ' <span class="muted">(your link)</span>' : "") + "</span>" +
+             '<button type="button" data-sl="up" aria-label="Move ' + esc(a.name) + ' up"' + (i ? "" : " disabled") + ">" + icon("chevron-down", "sm sl-up") + "</button>" +
+             '<button type="button" data-sl="down" aria-label="Move ' + esc(a.name) + ' down"' + (i < list.length - 1 ? "" : " disabled") + ">" + icon("chevron-down", "sm") + "</button>" +
+             (a.mine ? '<button type="button" data-sl="remove" aria-label="Remove ' + esc(a.name) + '">' + icon("dismiss", "sm") + "</button>"
+                     : '<label class="sl-show"><input type="checkbox" data-sl="show"' + (off ? "" : " checked") + "> Show</label>") + "</li>");
+    });
+    h.push("</ul>");
+    h.push('<form class="sl-add" data-sl-form><div class="sl-sec">Add a link</div>' +
+           '<input name="name" placeholder="Name" maxlength="40" required aria-label="Name">' +
+           '<input name="url" placeholder="https://…" maxlength="500" required aria-label="Web address">' +
+           '<div class="sl-add-row"><select name="icon" aria-label="Icon">' + LINK_ICONS.map(function (n) { return '<option value="' + n + '">' + n + "</option>"; }).join("") + "</select>" +
+           '<input type="color" name="color" value="#7c5cff" aria-label="Tile colour"><button type="submit" class="btn">Add</button></div>' +
+           '<div class="sl-err" hidden>Use a web address that starts with https:// (or a path starting with /).</div></form>');
+    h.push('<div class="sl-foot"><button type="button" class="btn-link" data-sl="reset">Reset to the default</button><button type="button" class="btn primary" data-sl="done">Done</button></div>');
+    return h.join("");
+  }
+  function initCustomize(panel) {
+    function redo(focusSel) { withRegistry(function (r) { renderLauncher(panel, r); var f = focusSel && panel.querySelector(focusSel); if (f) f.focus(); }); }
+    function move(id, d) {
+      withRegistry(function (r) {
+        var m = mine(), ids = myApps(customGroup(r), m, true).map(function (a) { return a.id; }), i = ids.indexOf(id), j = i + d;
+        if (i < 0 || j < 0 || j >= ids.length) return;
+        ids[i] = ids[j]; ids[j] = id; m.order = ids; saveMine(m);
+      });
+    }
+    panel.addEventListener("click", function (e) {
+      var b = e.target.closest && e.target.closest("[data-sl]");
+      e.stopPropagation();                // re-drawing the panel detaches the target; keep the page's "click outside" from closing it
+      if (!b || b.getAttribute("data-sl") === "show") return;
+      var act = b.getAttribute("data-sl"), li = b.closest("li"), id = li && li.getAttribute("data-id"), m;
+      if (act === "edit") { panel._edit = true; return redo(".sl-edit-list button, .sl-edit-list input"); }
+      if (act === "done") { panel._edit = false; return redo(".sl-edit"); }
+      if (act === "reset") { saveMine({ hide: [], order: [], add: [] }); return redo('[data-sl="done"]'); }
+      if (act === "up" || act === "down") { move(id, act === "up" ? -1 : 1); return redo('li[data-id="' + id + '"] [data-sl="' + act + '"]:not([disabled]), li[data-id="' + id + '"] [data-sl]'); }
+      if (act === "remove") { m = mine(); m.add = m.add.filter(function (a) { return a.id !== id; }); m.order = m.order.filter(function (x) { return x !== id; }); saveMine(m); return redo(".sl-add input"); }
+    });
+    panel.addEventListener("change", function (e) {
+      if (!e.target.getAttribute || e.target.getAttribute("data-sl") !== "show") return;
+      var id = e.target.closest("li").getAttribute("data-id"), m = mine();
+      m.hide = m.hide.filter(function (x) { return x !== id; });
+      if (!e.target.checked) m.hide.push(id);
+      saveMine(m); redo('li[data-id="' + id + '"] [data-sl="show"]');
+    });
+    panel.addEventListener("submit", function (e) {
+      var f = e.target; if (!f.hasAttribute || !f.hasAttribute("data-sl-form")) return;
+      e.preventDefault();
+      var el = f.elements, url = el["url"].value.trim(), name = el["name"].value.trim();
+      if (!/^\//.test(url) && !/^https?:\/\//i.test(url)) url = "https://" + url;
+      if (!name || !okUrl(url)) { f.querySelector(".sl-err").hidden = false; return; }
+      var m = mine(); m.add.push({ id: "my-" + Date.now().toString(36), name: name.slice(0, 40), url: url, icon: LINK_ICONS.indexOf(el["icon"].value) >= 0 ? el["icon"].value : "globe",
+                                   color: isHex(el["color"].value) ? el["color"].value : "" });
+      saveMine(m); redo(".sl-add input");
+    });
   }
 
   function closeMenus(except) {
@@ -251,6 +394,7 @@
       wbtn.setAttribute("aria-expanded", "false"); wbtn.setAttribute("aria-controls", "suite-launcher");
       panel.innerHTML = '<div class="sl-empty">Loading apps…</div>';
       withRegistry(function (r) { renderLauncher(panel, r); });
+      if (CUSTOM_ON) { initCustomize(panel); pullMine(function () { if (!panel._edit) withRegistry(function (r) { renderLauncher(panel, r); }); }); }
     }
 
     // page icon next to the page title, from the current menu entry
@@ -310,6 +454,7 @@
       }
       if (wbtn && t.closest("[data-launcher]")) {
         var open = !panel.classList.contains("open");
+        if (open && panel._edit) { panel._edit = false; withRegistry(function (r) { renderLauncher(panel, r); }); }
         closeMenus(); panel.classList.toggle("open", open); wbtn.setAttribute("aria-expanded", open ? "true" : "false");
         if (open) { var f = panel.querySelector("a"); if (f) f.focus(); }
         e.stopPropagation(); return;
@@ -388,7 +533,7 @@
         var l = links[i], lab = l.querySelector(".label");
         out.push({ href: l.getAttribute("href"), label: lab ? lab.textContent : l.textContent, group: l.getAttribute("data-group") || "", icon: l.getAttribute("data-icon") || "chevron" });
       }
-      if (registry) (registry.groups || []).forEach(function (g) { g.apps.forEach(function (a) {
+      if (registry) shownGroups(registry).forEach(function (g) { g.apps.forEach(function (a) {
         if (a.id !== APP) out.push({ href: a.url, label: a.name, group: g.label, icon: a.icon || "apps", ext: external(a, g), kw: a.description || "" });
       }); });
       return out;
@@ -420,5 +565,10 @@
   window.SuiteUI = { apply: apply, refresh: function () {}, setTheme: function (p) { savePref(p); apply(p); }, registry: withRegistry,
                      // the user's colours: setPalette("cobalt"), setPalette("custom:#00a3d6"), setPalette("") = the app's default
                      setPalette: function (v) { savePalette(v || ""); applyPalette(v || ""); }, palette: palettePref,
-                     palettes: PALETTES, customPalette: customPalette, contrast: contrast };
+                     palettes: PALETTES, customPalette: customPalette, contrast: contrast,
+                     // the person's own "Your apps" (hide / order / add); setAppsCustom(null) resets. Changes fire "suite:apps-changed".
+                     appsCustom: mine, setAppsCustom: function (m) {
+                       saveMine(normMine(m), true);
+                       var pn = document.getElementById("suite-launcher"); if (pn && registry) renderLauncher(pn, registry);
+                     } };
 })();

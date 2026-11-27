@@ -28,6 +28,7 @@
 <html lang="{% block lang %}en{% endblock %}" data-palette="{{ ui.palette }}" style="{{ ui.style }}" data-suite-palettes="{{ pchoices }}" data-suite-app="{{ suite.app_id }}"
       data-suite-static="{{ suite.static }}" data-suite-audience="{{ audience if audience is defined and audience else 'admin' }}"
       {% if suite.cookie_domain %}data-suite-cookie-domain="{{ suite.cookie_domain }}"{% endif %}
+      {% if suite.apps_mine_url %}data-suite-apps-mine-url="{{ suite.apps_mine_url }}"{% endif %}
       {% if suite.help_search %}data-suite-help-search="{{ suite.help_search }}"{% endif %}>
 <head>
 <meta charset="utf-8">

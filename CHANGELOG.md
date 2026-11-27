@@ -1,6 +1,22 @@
 # Changelog
 
-## Unreleased
+## 0.2.0
+- New: **palette looks.** A palette can now bring light and dark surface colours, a heading font and corner radius
+  (`light` / `dark` / `font_head` / `radius` / `radius_lg` in palettes.json; `--pl-*`, `--pd-*`, `--p-head`,
+  `--p-radius` variables). Apps no longer need their own CSS overrides to keep their brand. See docs/design.md.
+- New **Sevans** palettes: **Sevans Technology** (`sevans-technology`, gold highlights) and **Hepta** (`hepta`, amber
+  highlights) - Hepta violet #7C5CFF on ink #0B0D17, Space Grotesk headings, 10 / 16 px corners.
+- Space Grotesk (SIL OFL 1.1) is bundled in `static/suite/fonts/`; it is only downloaded when a palette uses it.
+- New: **customise "Your apps"** in the launcher - hide, show, reorder and add your own links. Saved per person in
+  the browser (and the shared cookie domain); `SuiteUI.appsCustom()` / `setAppsCustom()` and the `suite:apps-changed`
+  event let apps store it on their server. Registry groups take `"customizable": true|false`.
+- New: `Suite(apps_mine_url=...)` / `data-suite-apps-mine-url` keeps each person's "Your apps" on the app's server
+  (GET / PUT JSON), so it follows them to other devices; `suite_ui.apps_mine.clean()` validates what is stored.
+- Registry: new tiles **Sevans.io admin** (`sevans-site`), **Pulse TV** (`pulse-tv`) and **Hepta** (`hepta`).
+- New icons: `play`, `tv` (original artwork).
+- Selected-row and info backgrounds now mix with the panel colour, so they suit dark palette looks.
+
+## Earlier (0.1.x)
 - Valley Baptist blue now matches valleybaptist.org exactly: **#00a4d6** for the top bar, buttons, links and accents
   (buttons and links were a darker #007ea6). Valley Baptist Gray keeps the gray top bar with the same blue buttons.
   As on the church website, white text on this blue is about 2.9:1.

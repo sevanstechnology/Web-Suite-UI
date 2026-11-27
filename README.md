@@ -4,12 +4,14 @@ The shared interface for Sevans Technology apps. It started as EntraNAC's interf
 project gets the same Microsoft 365 / Copilot look and links to the others.
 
 - **One look.** Fluent-style top bar, collapsible left menu, breadcrumbs, cards, tables, forms, badges, sign-in page and
-  self-service portal layout. Light and dark, eighteen palettes (standard, fun and holiday; Valley Baptist by default),
+  self-service portal layout. Light and dark, twenty-one palettes (standard, Sevans, fun and holiday; Valley Baptist by default) - a palette can also
+  bring its own surfaces, heading font and corners (Hepta / Sevans Technology),
   plus a custom palette built from one brand colour with WCAG 4.5:1 contrast. Admins set the app's colours; each user
   can pick their own in the user menu, and it follows them from app to app.
 - **One navigation.** A Microsoft 365-style **app launcher** (the "waffle" at the top left) lists your apps, the
   Microsoft 365 apps and the admin centres. It reads one shared list, [`apps.json`](src/suite_ui/registry/apps.json),
-  so adding a project there adds it to every app's launcher.
+  so adding a project there adds it to every app's launcher. People can **customise "Your apps"**: hide, reorder and
+  add their own links.
 - **Feels like one product.** Top-bar search finds this app's pages *and* the other apps. The **Copilot** button opens
   Microsoft 365 Copilot. The light / dark choice follows the user from app to app.
 

@@ -60,7 +60,7 @@ class Suite:
                  static_url: str = "/static/suite", cookie_domain: str | None = None, help_search: str = "",
                  logos: dict[str, str] | None = None, copilot: bool = True, registry_ttl: int = 300,
                  palette: str = DEFAULT_PALETTE, accent: str = "", top: str = "",
-                 user_palettes: bool | Iterable[str] = True):
+                 user_palettes: bool | Iterable[str] = True, apps_mine_url: str = ""):
         """
         app_id / app_name  this app's id in the registry (highlighted in the launcher) and display name
         org_name           shown next to the logo and in the user menu
@@ -78,6 +78,8 @@ class Suite:
                            with cookie_domain, shared across apps). True = every palette plus "custom",
                            False = off (everyone sees the admin's colours), or a list such as ["cobalt", "teal"]
                            ("custom" in the list allows a custom colour)
+        apps_mine_url      endpoint that keeps each person's launcher "Your apps" changes on the server
+                           (GET / PUT JSON, see suite_ui.apps_mine). Empty = saved in the browser only
         """
         self.app_id, self.app_name, self.org_name, self.home_url = app_id, app_name, org_name, home_url
         self.static = static_url.rstrip("/")
@@ -92,6 +94,7 @@ class Suite:
         self.version = __version__
         self.set_palette(palette, accent, top)
         self.user_palettes = user_palettes
+        self.apps_mine_url = apps_mine_url
 
     # ------------------------------------------------------------------ registry
     def _read(self) -> dict:
