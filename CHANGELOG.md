@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.1
+- Registry: **Facility Hub** and **Pulse TV** removed from the shared "Your apps" menu. An app that still wants
+  them can add them in its own registry copy (or people can add them as their own links with Customize).
+
 ## 0.2.0
 - New: **palette looks.** A palette can now bring light and dark surface colours, a heading font and corner radius
   (`light` / `dark` / `font_head` / `radius` / `radius_lg` in palettes.json; `--pl-*`, `--pd-*`, `--p-head`,
@@ -12,7 +16,7 @@
   event let apps store it on their server. Registry groups take `"customizable": true|false`.
 - New: `Suite(apps_mine_url=...)` / `data-suite-apps-mine-url` keeps each person's "Your apps" on the app's server
   (GET / PUT JSON), so it follows them to other devices; `suite_ui.apps_mine.clean()` validates what is stored.
-- Registry: new tiles **Sevans.io admin** (`sevans-site`), **Pulse TV** (`pulse-tv`) and **Hepta** (`hepta`).
+- Registry: new tiles **Sevans.io admin** (`sevans-site`), **Pulse TV** (`pulse-tv`, removed again in 0.2.1) and **Hepta** (`hepta`).
 - New icons: `play`, `tv` (original artwork).
 - Selected-row and info backgrounds now mix with the panel colour, so they suit dark palette looks.
 
